@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zakat Research Hub — SRD LAZNAS IZI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --forest:#1E488F; --forest-deep:#001F3F;
+  --sage:#00804C; --sage-light:#E2F3EA; --sage-line:#C7E4D5; --sage-soft:#74C365;
+  --gold:#DBE64C; --gold-deep:#6F7A16; --gold-tint:#FAFBE0; --gold-soft:#74C365;
+  --paper:#F6F7ED; --card:#FFFFFF; --ink:#17232D; --ink-muted:#5B6B78;
+  --line:#E4E1D2; --red:#B3432D; --red-tint:#F7E9E4; --red-line:#E7C9BE;
+  /* Gradien "spektrum tinjauan": emas (pengajuan baru) → hijau (disetujui) —
+     dipakai konsisten sebagai metafora perjalanan proposal, bukan hiasan lepas. */
+  --grad-primary: linear-gradient(135deg, var(--sage) 0%, var(--forest) 100%);
+  --grad-gold: linear-gradient(135deg, var(--gold-soft) 0%, var(--gold) 100%);
+  --grad-spectrum: linear-gradient(90deg, var(--gold) 0%, var(--sage) 100%);
+  --grad-sidebar: linear-gradient(180deg, var(--forest) 0%, var(--forest-deep) 70%, #00060C 100%);
+}
+*{box-sizing:border-box}
+html{overflow-x:hidden;}
+body{background:var(--paper); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;}
+.admin-content-max{max-width:1400px; margin-left:auto; margin-right:auto; width:100%;}
+.font-display{font-family:'Fraunces',serif;}
+.font-mono{font-family:'JetBrains Mono',monospace;}
+.eyebrow{font-family:'Inter',sans-serif; font-weight:600; font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-deep);}
+.card{background:var(--card); border:1px solid var(--line); border-radius:14px;}
+.card-accent{position:relative; overflow:hidden;}
+.card-accent::before{content:'';position:absolute; top:0; left:0; right:0; height:3px; background:var(--grad-spectrum);}
+.btn-primary{background:var(--grad-primary); color:#fff; transition:transform .15s ease, box-shadow .15s ease, filter .15s ease; box-shadow:0 2px 8px rgba(18,54,42,.15);}
+.btn-primary:hover{filter:brightness(1.08); transform:translateY(-1px); box-shadow:0 8px 20px rgba(18,54,42,.22);}
+.btn-primary:disabled{opacity:.6; cursor:not-allowed; transform:none; filter:none;}
+.btn-gold{background:var(--grad-gold); color:var(--forest-deep); transition:transform .15s ease, box-shadow .15s ease, filter .15s ease; box-shadow:0 2px 8px rgba(199,154,61,.25);}
+.btn-gold:hover{filter:brightness(1.05); transform:translateY(-1px); box-shadow:0 8px 20px rgba(199,154,61,.32);}
+.btn-outline-amber{border:1.5px solid var(--gold); color:var(--gold-deep); background:#fff; transition:background .15s ease, transform .15s ease;}
+.btn-outline-amber:hover{background:var(--gold-tint); transform:translateY(-1px);}
+.btn-outline-red{border:1.5px solid var(--red-line); color:var(--red); background:#fff; transition:background .15s ease, transform .15s ease;}
+.btn-outline-red:hover{background:var(--red-tint); transform:translateY(-1px);}
+input,select,textarea{font-family:'Inter',sans-serif;}
+input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); box-shadow:0 0 0 3px var(--sage-light);}
+.tab-pill{transition:all .15s ease;}
+.tab-pill.active{background:var(--grad-primary); color:#fff;}
+.tab-pill:not(.active){color:var(--ink-muted);}
+.tab-pill:not(.active):hover{background:var(--sage-light); color:var(--forest);}
+.hidden-view{display:none !important;}
+.stamp{width:2.15rem; height:2.15rem; border-radius:9999px; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:.7rem; font-weight:600; border:2px solid var(--line); background:#fff; color:var(--ink-muted); flex-shrink:0; position:relative; z-index:1;}
+.stamp.done{background:var(--grad-primary); border-color:var(--sage); color:#fff;}
+.stamp.active{background:#fff; border-color:var(--gold); color:var(--gold-deep); box-shadow:0 0 0 4px var(--gold-tint);}
+.stamp.approved{background:var(--grad-primary); border-color:var(--sage); color:#fff;}
+.stamp.revise{background:var(--grad-gold); border-color:var(--gold); color:var(--forest-deep);}
+.stamp.rejected{background:var(--red); border-color:var(--red); color:#fff;}
+.timeline-line{position:absolute; top:1.075rem; left:0; right:0; height:2px; background:var(--line); z-index:0;}
+.timeline-line-fill{position:absolute; top:0; left:0; height:100%; background:var(--grad-spectrum); transition:width .4s ease;}
+.badge{font-size:.68rem; font-weight:600; letter-spacing:.02em; padding:.28rem .6rem; border-radius:999px; display:inline-flex; align-items:center; gap:.3rem;}
+.badge-pending{background:#EFEBDD; color:#7A6E4E;}
+.badge-review{background:var(--gold-tint); color:var(--gold-deep);}
+.badge-approved{background:var(--sage-light); color:var(--sage);}
+.badge-revise{background:var(--gold-tint); color:var(--gold-deep);}
+.badge-rejected{background:var(--red-tint); color:var(--red);}
+.icon{width:1.05rem; height:1.05rem; stroke-width:1.75; flex-shrink:0;}
+.fade-up{animation:fadeUp .5s ease both;}
+@keyframes fadeUp{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)}}
+.toast-enter{animation:toastIn .25s ease both;}
+@keyframes toastIn{from{opacity:0; transform:translateY(-8px) translateX(8px)} to{opacity:1; transform:translateY(0) translateX(0)}}
+.sidebar-link{transition:background .15s ease, color .15s ease;}
+.sidebar-link.active{background:rgba(199,154,61,.16); color:var(--gold);}
+.sidebar-link:not(.active){color:#9FB3C9;}
+.sidebar-link:not(.active):hover{background:rgba(255,255,255,.08); color:#fff;}
+.spinner{border:2.5px solid var(--sage-line); border-top-color:var(--sage); border-radius:50%; width:1rem; height:1rem; animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:var(--sage-line); border-radius:6px;}
+
+/* Aurora ambien di belakang hero — satu-satunya momen "berani" di halaman ini;
+   sisanya sengaja dijaga tenang supaya tidak ramai. */
+.hero-aurora{position:absolute; inset:-15% -10% auto -10%; height:480px; z-index:0; pointer-events:none; filter:blur(70px);
+  background:
+    radial-gradient(circle at 25% 30%, rgba(47,111,78,.22), transparent 60%),
+    radial-gradient(circle at 78% 55%, rgba(199,154,61,.20), transparent 55%);
+  animation: auroraDrift 20s ease-in-out infinite alternate;}
+@keyframes auroraDrift{from{transform:translate(0,0) scale(1)} to{transform:translate(2.5%,-2%) scale(1.04)}}
+.hero-content{position:relative; z-index:1;}
+
+/* Skeleton loading */
+.skeleton{background:linear-gradient(90deg, var(--line) 25%, #F1EDDF 37%, var(--line) 63%); background-size:400% 100%; animation:skeletonShine 1.4s ease infinite; border-radius:6px; display:inline-block;}
+@keyframes skeletonShine{0%{background-position:100% 0}100%{background-position:0% 0}}
+
+/* Dropzone unggah berkas */
+.dropzone{border:1.5px dashed var(--line); border-radius:12px; padding:1.1rem 1rem; text-align:center; cursor:pointer; transition:border-color .15s ease, background .15s ease;}
+.dropzone:hover{border-color:var(--sage-soft); background:var(--sage-light);}
+.dropzone.drag-over{border-color:var(--sage); background:var(--sage-light);}
+.dropzone.has-file{border-style:solid; border-color:var(--sage);}
+.dropzone-browse{color:var(--sage); font-weight:600; text-decoration:underline;}
+.dropzone-filename{font-size:.75rem; color:var(--sage); font-weight:500; margin-top:.25rem; word-break:break-all;}
+
+/* Sidebar admin: hamburger di layar kecil */
+@media (max-width: 767px){
+  #admin-sidebar{ position:fixed; left:0; top:0; bottom:0; transform:translateX(-100%); transition:transform .2s ease; z-index:50; }
+  #admin-sidebar.open{ transform:translateX(0); }
+  #sidebar-backdrop{ display:none; position:fixed; inset:0; background:rgba(0,31,63,.5); z-index:45; }
+  #sidebar-backdrop.open{ display:block; }
+}
+
+@media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important;} }
+</style>
+</head>
+<body class="antialiased">
+
+<div id="config-banner" class="hidden-view text-center text-sm py-2 px-4" style="background:var(--red-tint); color:var(--red)">
+  ⚠ WEB_APP_URL belum diisi di kode — sambungkan dulu ke alamat Apps Script Anda (lihat komentar di awal file ini).
+</div>
+
+<header class="sticky top-0 z-40 bg-[var(--paper)]/95 backdrop-blur border-b" style="border-color:var(--line)">
+  <div class="max-w-7xl mx-auto px-3 sm:px-8 h-[68px] flex items-center justify-between gap-2 sm:gap-4">
+    <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+      <svg width="34" height="34" class="sm:w-[38px] sm:h-[38px] shrink-0" viewBox="0 0 38 38" fill="none">
+        <rect width="38" height="38" rx="10" fill="#001F3F"/>
+        <path d="M11 25C11 18 15 12 22 10" stroke="#DBE64C" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="22" cy="10" r="2.6" fill="#DBE64C"/>
+        <path d="M11 25C13.5 24 16 22.5 17.5 20" stroke="#E2F3EA" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div class="leading-tight min-w-0">
+        <p class="font-display font-semibold text-[.95rem] sm:text-[1.05rem] tracking-tight truncate" style="color:var(--forest)">Zakat Research Hub</p>
+        <p class="eyebrow !text-[.62rem] hidden sm:block">SRD · LAZNAS IZI</p>
+      </div>
+    </div>
+    <nav class="flex items-center gap-1 p-1 rounded-full shrink-0" style="background:var(--sage-light)">
+      <button onclick="setRole('student')" id="tab-student" class="tab-pill active px-2.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap">
+        <span class="sm:hidden">Peneliti</span><span class="hidden sm:inline">Portal Peneliti</span>
+      </button>
+      <button onclick="setRole('admin')" id="tab-admin" class="tab-pill px-2.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap">
+        <span class="sm:hidden">Admin</span><span class="hidden sm:inline">Dasbor Admin SRD</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ STUDENT VIEW ============ -->
+<main id="view-student">
+  <section class="max-w-7xl mx-auto px-5 sm:px-8 pt-14 pb-10 relative overflow-hidden">
+    <div class="hero-aurora"></div>
+    <div class="hero-content max-w-2xl fade-up">
+      <p class="eyebrow mb-3">© Divisi SRD (System, Research &amp; Development)</p>
+      <h1 class="font-display text-[2.35rem] sm:text-[3rem] leading-[1.08] font-semibold tracking-tight" style="color:var(--forest)">
+        Ajukan riset zakat Anda,<br>
+        <span style="background:var(--grad-primary); -webkit-background-clip:text; background-clip:text; color:transparent;">mulai dari sini.</span>
+      </h1>
+      <p class="mt-5 text-[1.05rem] leading-relaxed" style="color:var(--ink-muted)">
+        SRD LAZNAS IZI membuka akses data dan pendampingan bagi mahasiswa yang menulis skripsi, tesis, atau disertasi seputar zakat. Isi formulir di bawah, dan tim kami akan meninjaunya.
+      </p>
+    </div>
+  </section>
+
+  <section class="max-w-7xl mx-auto px-5 sm:px-8 pb-20 grid grid-cols-1 lg:grid-cols-5 gap-6">
+    <div class="lg:col-span-3 card card-accent p-7 sm:p-8">
+      <h2 class="font-display text-xl font-semibold mb-1" style="color:var(--forest)">Ajukan Proposal Riset</h2>
+      <p class="text-sm mb-6" style="color:var(--ink-muted)">Semua kolom bertanda * wajib diisi.</p>
+
+      <div id="submission-success" class="hidden-view p-5 rounded-xl mb-6" style="background:var(--sage-light); border:1px solid var(--sage-line)">
+        <p class="text-sm font-semibold" style="color:var(--sage)">Pengajuan terkirim.</p>
+        <p class="text-sm mt-1" style="color:var(--forest)">Nomor pengajuan Anda: <span id="success-id" class="font-mono font-semibold"></span></p>
+      </div>
+      <div id="submission-error" class="hidden-view p-4 rounded-lg mb-6 text-sm" style="background:var(--red-tint); color:var(--red)"></div>
+
+      <form id="submission-form" class="space-y-4">
+        <p class="text-xs font-semibold" style="color:var(--ink-muted)">DATA DIRI</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input required id="f-name" placeholder="Nama lengkap *" class="px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          <input required id="f-university" placeholder="Asal universitas *" class="px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <select required id="f-identity-type" class="px-3.5 py-2.5 rounded-lg border bg-white" style="border-color:var(--line)">
+            <option value="">Jenis identitas *</option><option>NIM</option><option>NIK</option>
+          </select>
+          <input required id="f-identity-number" placeholder="Nomor identitas *" class="px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          <input id="f-whatsapp" placeholder="Nomor WhatsApp" class="px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input id="f-faculty" placeholder="Fakultas" class="px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          <input id="f-program" placeholder="Program studi" class="px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+        </div>
+        <input required type="email" id="f-email" placeholder="Email aktif *" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+
+        <p class="text-xs font-semibold pt-2" style="color:var(--ink-muted)">DATA RISET</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <select required id="f-type" class="px-3.5 py-2.5 rounded-lg border bg-white" style="border-color:var(--line)">
+            <option value="">Jenjang penelitian *</option><option>Skripsi</option><option>Tesis</option><option>Disertasi</option>
+          </select>
+          <select required id="f-topic" class="px-3.5 py-2.5 rounded-lg border bg-white" style="border-color:var(--line)">
+            <option value="">Memuat kategori…</option>
+          </select>
+        </div>
+        <input required id="f-title" placeholder="Judul riset *" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+        <input id="f-location" placeholder="Objek/lokasi riset (mis. Kantor Pusat, Cabang X)" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="block text-xs mb-1" style="color:var(--ink-muted)">Tanggal mulai</label><input type="date" id="f-start" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)"></div>
+          <div><label class="block text-xs mb-1" style="color:var(--ink-muted)">Tanggal selesai</label><input type="date" id="f-end" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)"></div>
+        </div>
+
+        <p class="text-xs font-semibold pt-2" style="color:var(--ink-muted)">BERKAS</p>
+        <div>
+          <label class="block text-sm font-medium mb-1.5">Surat pengantar kampus (PDF) *</label>
+          <div class="dropzone" data-for="f-cover-letter">
+            <input type="file" id="f-cover-letter" accept="application/pdf" class="hidden">
+            <svg class="icon mx-auto mb-1" style="width:1.4rem;height:1.4rem;color:var(--sage)" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <p class="text-sm" style="color:var(--ink-muted)">Tarik berkas ke sini atau <span class="dropzone-browse">pilih file</span></p>
+            <p class="dropzone-filename"></p>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1.5">Draf proposal riset (PDF) *</label>
+          <div class="dropzone" data-for="f-proposal">
+            <input type="file" id="f-proposal" accept="application/pdf" class="hidden">
+            <svg class="icon mx-auto mb-1" style="width:1.4rem;height:1.4rem;color:var(--sage)" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <p class="text-sm" style="color:var(--ink-muted)">Tarik berkas ke sini atau <span class="dropzone-browse">pilih file</span></p>
+            <p class="dropzone-filename"></p>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1.5">Instrumen penelitian — kuesioner/pedoman wawancara (opsional)</label>
+          <div class="dropzone" data-for="f-instrument">
+            <input type="file" id="f-instrument" accept="application/pdf" class="hidden">
+            <svg class="icon mx-auto mb-1" style="width:1.4rem;height:1.4rem;color:var(--sage)" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <p class="text-sm" style="color:var(--ink-muted)">Tarik berkas ke sini atau <span class="dropzone-browse">pilih file</span></p>
+            <p class="dropzone-filename"></p>
+          </div>
+          <p class="text-xs mt-1" style="color:var(--ink-muted)">Lampirkan jika riset Anda memakai kuesioner atau pedoman wawancara terstruktur.</p>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn-primary w-full py-3 rounded-lg font-medium text-sm mt-2 flex items-center justify-center gap-2">
+          <span id="submit-btn-text">Kirim Pengajuan</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="lg:col-span-2 card card-accent p-7 sm:p-8 h-fit">
+      <h2 class="font-display text-xl font-semibold mb-1" style="color:var(--forest)">Lacak Status Pengajuan</h2>
+      <p class="text-sm mb-5" style="color:var(--ink-muted)">Masukkan nomor pengajuan Anda (format REQ-0xx).</p>
+      <div class="flex gap-2 mb-6">
+        <input type="text" id="track-input" placeholder="REQ-001" class="font-mono flex-1 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+        <button onclick="trackSubmission()" id="track-btn" class="btn-gold px-5 sm:px-6 rounded-lg font-medium text-sm shrink-0 whitespace-nowrap">Lacak</button>
+      </div>
+      <div id="track-result"></div>
+    </div>
+  </section>
+
+  <!-- Output & Penyelesaian -->
+  <section class="max-w-7xl mx-auto px-5 sm:px-8 pb-20">
+    <div class="card card-accent p-7 sm:p-8">
+      <h2 class="font-display text-xl font-semibold mb-1" style="color:var(--forest)">Kirim Output &amp; Penyelesaian Riset</h2>
+      <p class="text-sm mb-6" style="color:var(--ink-muted)">Khusus pengajuan yang sudah berstatus <b>Approved</b>. Masukkan nomor pengajuan Anda untuk membuka formulir.</p>
+
+      <div class="flex gap-2 mb-3 max-w-md">
+        <input type="text" id="output-id-input" placeholder="REQ-001" class="font-mono flex-1 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+        <button onclick="checkOutputEligibility()" id="output-verify-btn" class="btn-gold px-5 sm:px-6 rounded-lg font-medium text-sm shrink-0 whitespace-nowrap">Verifikasi</button>
+      </div>
+      <p id="output-ineligible" class="hidden-view text-sm p-3 rounded-lg mb-4 max-w-md" style="background:var(--red-tint); color:var(--red)"></p>
+
+      <div id="output-form-wrap" class="hidden-view mt-6 pt-6 border-t" style="border-color:var(--line)">
+        <p id="output-title-preview" class="text-sm font-medium mb-5" style="color:var(--sage)"></p>
+        <div id="output-success" class="hidden-view p-5 rounded-xl mb-6" style="background:var(--sage-light); border:1px solid var(--sage-line)">
+          <p class="text-sm font-semibold" style="color:var(--sage)">Output berhasil dikirim.</p>
+          <p class="text-sm mt-1" style="color:var(--forest)">Status pengajuan otomatis menjadi <b>Completed</b>. Terima kasih atas kontribusi risetnya.</p>
+        </div>
+        <div id="output-error" class="hidden-view p-4 rounded-lg mb-6 text-sm" style="background:var(--red-tint); color:var(--red)"></div>
+
+        <form id="output-form" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1.5">Ringkasan eksekutif *</label>
+            <textarea required id="o-summary" rows="4" placeholder="Ringkasan temuan utama riset…" class="w-full p-3 border rounded-lg text-sm" style="border-color:var(--line)"></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5">Rekomendasi praktis untuk LAZNAS IZI *</label>
+            <textarea required id="o-recommendations" rows="4" placeholder="Apa yang sebaiknya dilakukan lembaga berdasarkan temuan Anda?" class="w-full p-3 border rounded-lg text-sm" style="border-color:var(--line)"></textarea>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1.5">Infografis / slide presentasi (PDF)</label>
+              <div class="dropzone" data-for="o-infografis">
+            <input type="file" id="o-infografis" accept="application/pdf" class="hidden">
+            <svg class="icon mx-auto mb-1" style="width:1.4rem;height:1.4rem;color:var(--sage)" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <p class="text-sm" style="color:var(--ink-muted)">Tarik berkas ke sini atau <span class="dropzone-browse">pilih file</span></p>
+            <p class="dropzone-filename"></p>
+          </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5">Naskah akademik final (PDF) *</label>
+              <div class="dropzone" data-for="o-naskah">
+            <input type="file" id="o-naskah" accept="application/pdf" class="hidden">
+            <svg class="icon mx-auto mb-1" style="width:1.4rem;height:1.4rem;color:var(--sage)" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <p class="text-sm" style="color:var(--ink-muted)">Tarik berkas ke sini atau <span class="dropzone-browse">pilih file</span></p>
+            <p class="dropzone-filename"></p>
+          </div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5">Link dataset lapangan (opsional)</label>
+            <input type="url" id="o-dataset" placeholder="https://…" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          </div>
+          <button type="submit" id="output-submit-btn" class="btn-primary w-full sm:w-auto px-8 py-3 rounded-lg font-medium text-sm">Kirim Output</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ ADMIN VIEW ============ -->
+<main id="view-admin" class="hidden-view h-[calc(100vh-68px)] w-full">
+
+  <!-- Login gate -->
+  <div id="admin-login" class="h-full flex items-center justify-center px-5">
+    <div class="card card-accent p-8 max-w-sm w-full text-center">
+      <h2 class="font-display text-xl font-semibold mb-1" style="color:var(--forest)">Masuk Admin SRD</h2>
+      <p class="text-sm mb-5" style="color:var(--ink-muted)">Masukkan kata sandi admin untuk membuka dasbor.</p>
+      <input type="password" id="admin-password-input" placeholder="Kata sandi" class="w-full px-3.5 py-2.5 rounded-lg border mb-3" style="border-color:var(--line)">
+      <button onclick="attemptAdminLogin()" id="admin-login-btn" class="btn-primary w-full py-2.5 rounded-lg font-medium text-sm">Masuk</button>
+      <p id="admin-login-error" class="hidden-view text-xs mt-3" style="color:var(--red)"></p>
+    </div>
+  </div>
+
+  <!-- Authenticated dashboard -->
+  <div id="admin-authenticated" class="hidden-view h-full flex overflow-hidden relative">
+    <div id="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
+    <aside id="admin-sidebar" class="w-64 shrink-0 h-full flex flex-col" style="background:var(--grad-sidebar)">
+      <div class="px-6 py-6 flex items-start justify-between">
+        <div><p class="eyebrow !text-[.62rem]" style="color:var(--gold)">Panel Internal</p><p class="font-display text-white text-lg font-semibold mt-1">SRD Admin</p></div>
+        <button onclick="toggleSidebar(false)" class="md:hidden text-white/60"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/></svg></button>
+      </div>
+      <nav class="flex-1 px-4 space-y-1">
+        <a href="#" onclick="setAdminSubview('dashboard');return false;" id="nav-dashboard" class="sidebar-link active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12l8-8 8 8M6 10v10h12V10" stroke-linecap="round" stroke-linejoin="round"/></svg> Dasbor
+        </a>
+        <a href="#" onclick="setAdminSubview('repositori');return false;" id="nav-repositori" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 6v13a1 1 0 001 1h14a1 1 0 001-1V6M9 10h6" stroke-linecap="round" stroke-linejoin="round"/></svg> Repositori Riset
+        </a>
+        <a href="#" onclick="setAdminSubview('statistik');return false;" id="nav-statistik" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 20V10m6 10V4m6 16v-7" stroke-linecap="round" stroke-linejoin="round"/></svg> Statistik
+        </a>
+        <a href="#" onclick="setAdminSubview('kategori');return false;" id="nav-kategori" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7h10M7 12h10M7 17h6" stroke-linecap="round" stroke-linejoin="round"/></svg> Kategori Topik
+        </a>
+      </nav>
+      <div class="p-4 mx-4 mb-4 rounded-xl flex items-center justify-between" style="background:rgba(255,255,255,.05)">
+        <div><p class="text-xs" style="color:#9FB3C9">Masuk sebagai</p><p class="text-sm font-medium text-white mt-0.5">Admin SRD</p></div>
+        <button onclick="adminLogout()" title="Keluar" class="text-xs" style="color:#9FB3C9">Keluar</button>
+      </div>
+    </aside>
+
+    <div class="flex-1 h-full flex flex-col overflow-hidden min-w-0">
+      <div class="md:hidden shrink-0 bg-white border-b flex items-center gap-3 px-4 py-3" style="border-color:var(--line)">
+        <button onclick="toggleSidebar(true)" class="p-1.5 -ml-1.5 rounded-lg" style="color:var(--forest)">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/></svg>
+        </button>
+        <span class="font-display font-semibold text-sm truncate" style="color:var(--forest)" id="mobile-admin-title">Dasbor</span>
+      </div>
+
+    <section id="admin-dashboard" class="flex-1 min-h-0 overflow-y-auto p-5 sm:p-8 admin-content-max">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
+        <div>
+          <h2 class="font-display text-2xl font-semibold" style="color:var(--forest)">Antrean Pengajuan Proposal</h2>
+          <p class="text-sm mt-0.5" style="color:var(--ink-muted)">Tinjau dan putuskan proposal riset yang masuk.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <select id="admin-status-filter" onchange="renderQueueTable()" class="px-3 py-2.5 border rounded-lg text-sm bg-white shrink-0" style="border-color:var(--line)">
+            <option value="">Semua Status</option>
+            <option>Pending</option><option>Under Review</option><option>Revisi Diminta</option>
+            <option>Approved</option><option>Rejected</option><option>Completed</option>
+          </select>
+          <div class="relative flex-1 min-w-[160px]">
+            <svg class="icon absolute left-3 top-1/2 -translate-y-1/2" style="color:var(--ink-muted)" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/></svg>
+            <input id="admin-search" oninput="renderQueueTable()" type="text" placeholder="Cari nama atau ID…" class="pl-10 pr-4 py-2.5 border rounded-lg w-full sm:w-64 text-sm" style="border-color:var(--line)">
+          </div>
+          <button onclick="fetchQueue()" title="Muat ulang" class="p-2.5 border rounded-lg shrink-0" style="border-color:var(--line); color:var(--ink-muted)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 106-8.5M3 4v5h5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8" id="admin-stat-cards"></div>
+
+      <div class="card overflow-hidden">
+        <div class="p-5 border-b flex items-center justify-between" style="border-color:var(--line); background:var(--sage-light)">
+          <h3 class="font-semibold text-sm" style="color:var(--forest)">Semua Pengajuan</h3>
+          <div class="flex items-center gap-3">
+            <span class="text-xs hidden sm:inline" style="color:var(--ink-muted)" id="last-loaded"></span>
+            <span class="text-xs font-mono" style="color:var(--ink-muted)" id="queue-count"></span>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead style="background:#FCFAF4; color:var(--ink-muted); border-bottom:1px solid var(--line)">
+              <tr>
+                <th class="px-6 py-3.5 font-medium">ID</th>
+                <th class="px-6 py-3.5 font-medium">Peneliti</th>
+                <th class="px-6 py-3.5 font-medium">Judul Riset</th>
+                <th class="px-6 py-3.5 font-medium cursor-pointer select-none" onclick="toggleSort()">
+                  <span class="inline-flex items-center gap-1">Tanggal
+                    <svg class="icon" style="width:.85rem;height:.85rem" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path id="sort-icon" d="M12 5v14m0 0l-5-5m5 5l5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </span>
+                </th>
+                <th class="px-6 py-3.5 font-medium">Status</th>
+                <th class="px-6 py-3.5 font-medium text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="queue-body" class="divide-y" style="border-color:var(--line)"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin-review" class="hidden-view flex-1 min-h-0 flex flex-col" style="background:var(--paper)">
+      <div class="bg-white border-b px-6 py-4 flex items-center justify-between shrink-0" style="border-color:var(--line)">
+        <div class="flex items-center gap-4">
+          <button onclick="setAdminSubview('dashboard')" class="p-2 rounded-lg" style="color:var(--ink-muted)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5m0 0l7 7m-7-7l7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <h2 class="font-display text-lg font-semibold" style="color:var(--forest)">Review Proposal <span style="color:var(--line)">|</span> <span id="review-id" class="font-mono" style="color:var(--sage)">–</span></h2>
+        </div>
+        <span id="review-status-badge" class="badge"></span>
+      </div>
+      <div class="flex-1 flex overflow-hidden flex-col lg:flex-row">
+        <div class="lg:w-3/5 p-6 overflow-y-auto lg:border-r" style="border-color:var(--line)">
+          <div class="card card-accent p-5 mb-6">
+            <p class="text-xs font-semibold mb-4" style="color:var(--ink-muted)">PERJALANAN PENGAJUAN</p>
+            <div id="review-timeline"></div>
+          </div>
+          <div class="card p-5 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+            <div><p class="text-xs mb-1" style="color:var(--ink-muted)">Nama Peneliti</p><p id="review-name" class="font-medium">–</p></div>
+            <div><p class="text-xs mb-1" style="color:var(--ink-muted)">Universitas</p><p id="review-univ" class="font-medium">–</p></div>
+            <div><p class="text-xs mb-1" style="color:var(--ink-muted)">Jenjang</p><p id="review-type" class="font-medium">–</p></div>
+            <div><p class="text-xs mb-1" style="color:var(--ink-muted)">Kategori Topik</p><p id="review-topic" class="font-medium">–</p></div>
+            <div><p class="text-xs mb-1" style="color:var(--ink-muted)">Lokasi Riset</p><p id="review-location" class="font-medium">–</p></div>
+            <div><p class="text-xs mb-1" style="color:var(--ink-muted)">Durasi</p><p id="review-duration" class="font-medium">–</p></div>
+          </div>
+          <div class="card p-5 mb-6">
+            <p class="text-xs font-semibold mb-3" style="color:var(--ink-muted)">BERKAS TERLAMPIR</p>
+            <div id="review-files" class="space-y-2 text-sm"></div>
+          </div>
+          <div>
+            <p class="text-xs font-semibold mb-3" style="color:var(--ink-muted)">RIWAYAT AKTIVITAS</p>
+            <ul id="review-log" class="space-y-2 text-sm"><li style="color:var(--ink-muted)">Riwayat lengkap tersedia di tab LogAdmin pada Spreadsheet.</li></ul>
+          </div>
+        </div>
+        <div class="lg:w-2/5 p-6 bg-white overflow-y-auto">
+          <h3 class="font-display font-semibold text-lg mb-5" style="color:var(--forest)">Panel Keputusan</h3>
+          <div id="decision-locked" class="hidden-view p-4 rounded-lg mb-6 text-sm" style="background:var(--sage-light); color:var(--sage)"></div>
+          <div id="decision-form">
+            <label class="block text-sm font-medium mb-2">Catatan internal / pesan revisi</label>
+            <textarea id="review-note" rows="4" placeholder="Alasan penolakan atau poin revisi…" class="w-full p-3 border rounded-lg text-sm mb-4" style="border-color:var(--line)"></textarea>
+            <label class="block text-sm font-medium mb-2">Link surat balasan (opsional, Google Docs)</label>
+            <input id="review-letter" placeholder="https://docs.google.com/…" class="w-full p-3 border rounded-lg text-sm mb-6" style="border-color:var(--line)">
+            <div class="space-y-2.5">
+              <button onclick="decide('Approved')" class="btn-primary w-full py-3 rounded-lg font-medium text-sm">Setujui Proposal</button>
+              <button onclick="decide('Revisi Diminta')" class="btn-outline-amber w-full py-3 rounded-lg font-medium text-sm">Kembalikan untuk Revisi</button>
+              <button onclick="decide('Rejected')" class="btn-outline-red w-full py-3 rounded-lg font-medium text-sm">Tolak Pengajuan</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin-repositori" class="hidden-view flex-1 min-h-0 overflow-y-auto p-5 sm:p-8 admin-content-max">
+      <h2 class="font-display text-2xl font-semibold mb-1" style="color:var(--forest)">Repositori Riset</h2>
+      <p class="text-sm mb-7" style="color:var(--ink-muted)">Arsip riset yang telah disetujui/selesai.</p>
+      <div id="repo-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    </section>
+
+    <section id="admin-statistik" class="hidden-view flex-1 min-h-0 overflow-y-auto p-5 sm:p-8 admin-content-max">
+      <h2 class="font-display text-2xl font-semibold mb-1" style="color:var(--forest)">Statistik &amp; Laporan</h2>
+      <p class="text-sm mb-7" style="color:var(--ink-muted)">Ringkasan status seluruh pengajuan yang tercatat.</p>
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div class="card p-7 lg:col-span-2 flex flex-col items-center justify-center">
+          <svg width="180" height="180" viewBox="0 0 180 180" id="donut"></svg>
+          <div id="donut-legend" class="mt-5 space-y-2 w-full"></div>
+        </div>
+        <div class="card p-7 lg:col-span-3">
+          <p class="text-sm font-semibold mb-4" style="color:var(--forest)">Sebaran per Universitas</p>
+          <div id="univ-bars" class="space-y-3"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin-kategori" class="hidden-view flex-1 min-h-0 overflow-y-auto p-5 sm:p-8 admin-content-max">
+      <h2 class="font-display text-2xl font-semibold mb-1" style="color:var(--forest)">Kategori Topik</h2>
+      <p class="text-sm mb-7" style="color:var(--ink-muted)">Kategori yang aktif akan muncul di formulir pengajuan mahasiswa. Menonaktifkan kategori tidak menghapus riwayat pengajuan yang sudah memakainya.</p>
+
+      <div class="card p-6 mb-6 max-w-lg">
+        <label class="block text-sm font-medium mb-2">Tambah kategori baru</label>
+        <div class="flex gap-2">
+          <input id="new-category-input" placeholder="Contoh: Riset Kebencanaan" class="flex-1 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          <button onclick="addCategoryHandler()" id="add-category-btn" class="btn-primary px-5 rounded-lg font-medium text-sm">Tambah</button>
+        </div>
+        <p id="category-error" class="hidden-view text-xs mt-2" style="color:var(--red)"></p>
+      </div>
+
+      <div class="card overflow-hidden max-w-lg">
+        <div class="p-4 border-b text-sm font-semibold" style="border-color:var(--line); background:var(--sage-light); color:var(--forest)">Semua Kategori</div>
+        <div id="category-list" class="divide-y" style="border-color:var(--line)"></div>
+      </div>
+    </section>
+    </div>
+  </div>
+</main>
+
+<div id="confirm-modal" class="hidden-view fixed inset-0 z-50 flex items-center justify-center px-5" style="background:rgba(18,54,42,.45)">
+  <div class="card p-7 max-w-sm w-full">
+    <p id="confirm-message" class="text-sm mb-6" style="color:var(--ink)"></p>
+    <div class="flex gap-3">
+      <button onclick="closeConfirm()" class="flex-1 py-2.5 rounded-lg text-sm font-medium border" style="border-color:var(--line); color:var(--ink-muted)">Batal</button>
+      <button id="confirm-ok-btn" class="flex-1 py-2.5 rounded-lg text-sm font-medium btn-outline-red">Ya, Lanjutkan</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="hidden-view fixed top-4 right-4 left-4 sm:left-auto sm:top-6 sm:right-6 bg-[var(--forest-deep)] text-white px-5 py-4 rounded-xl shadow-xl flex items-center gap-3 z-50 sm:max-w-sm">
+  <div class="rounded-full p-1 w-6 h-6 flex items-center justify-center shrink-0" style="background:var(--gold)">
+    <svg class="w-3.5 h-3.5" style="color:var(--forest-deep)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <p id="toast-message" class="text-sm font-medium"></p>
+</div>
+
+<script>
+// ============================================================
+// KONFIGURASI
+// File ini di-hosting di Vercel (lewat GitHub) — WEB_APP_URL di bawah
+// tetap menunjuk ke Apps Script Anda sebagai BACKEND (penyimpan data),
+// terpisah dari tempat file ini di-hosting. Deploy Apps Script dulu,
+// salin URL /exec-nya, baru tempel di sini SEBELUM diunggah ke GitHub.
+// ============================================================
+const WEB_APP_URL = 'AKfycbwMrXZ9aXyY-mYtDq5Y9UBhB63uEf9kPkduX_OckWussvqXC5ViEsyiX7_bXStRJb2jDw';
+
+if (!WEB_APP_URL || WEB_APP_URL.indexOf('GANTI_DENGAN') !== -1) {
+  document.getElementById('config-banner').classList.remove('hidden-view');
+}
+
+let submissions = [];
+let adminPassword = null;
+let currentReviewId = null;
+let adminSubview = 'dashboard';
+let categories = [];
+let currentOutputId = null;
+let confirmCallback = null;
+let queueSortDir = 'desc'; // terbaru dulu
+const ADMIN_SESSION_KEY = 'zrh_admin_pw';
+const MAX_FILE_MB = 10;
+
+// ---------- DROPZONE UNGGAH BERKAS ----------
+function initDropzone(zone){
+  const input = zone.querySelector('input[type=file]');
+  const filenameEl = zone.querySelector('.dropzone-filename');
+  function refresh(){
+    if(input.files[0]){ filenameEl.textContent = input.files[0].name; zone.classList.add('has-file'); }
+    else { filenameEl.textContent = ''; zone.classList.remove('has-file'); }
+  }
+  zone.addEventListener('click', (e) => { if(e.target !== input) input.click(); });
+  input.addEventListener('change', refresh);
+  ['dragenter','dragover'].forEach(evt => zone.addEventListener(evt, e => { e.preventDefault(); zone.classList.add('drag-over'); }));
+  ['dragleave','drop'].forEach(evt => zone.addEventListener(evt, e => { e.preventDefault(); zone.classList.remove('drag-over'); }));
+  zone.addEventListener('drop', e => {
+    if(e.dataTransfer.files[0]){ input.files = e.dataTransfer.files; refresh(); }
+  });
+}
+document.querySelectorAll('.dropzone').forEach(initDropzone);
+
+// ---------- SIDEBAR MOBILE ----------
+function toggleSidebar(open){
+  document.getElementById('admin-sidebar').classList.toggle('open', open);
+  document.getElementById('sidebar-backdrop').classList.toggle('open', open);
+}
+
+// ---------- FETCH HELPERS ----------
+async function apiGet(params){
+  const res = await fetch(WEB_APP_URL + '?' + new URLSearchParams(params).toString());
+  return res.json();
+}
+async function apiPost(payload){
+  const res = await fetch(WEB_APP_URL, { method:'POST', body: JSON.stringify(payload) });
+  return res.json();
+}
+
+// ---------- ROLE / VIEW SWITCH ----------
+function setRole(role){
+  document.getElementById('view-student').classList.toggle('hidden-view', role!=='student');
+  document.getElementById('view-admin').classList.toggle('hidden-view', role!=='admin');
+  document.getElementById('tab-student').classList.toggle('active', role==='student');
+  document.getElementById('tab-admin').classList.toggle('active', role==='admin');
+  if(role==='admin'){
+    if(adminPassword){ document.getElementById('admin-login').classList.add('hidden-view'); document.getElementById('admin-authenticated').classList.remove('hidden-view'); setAdminSubview('dashboard'); }
+    else { document.getElementById('admin-login').classList.remove('hidden-view'); document.getElementById('admin-authenticated').classList.add('hidden-view'); }
+  }
+}
+
+async function attemptAdminLogin(){
+  const pw = document.getElementById('admin-password-input').value.trim();
+  const btn = document.getElementById('admin-login-btn');
+  const err = document.getElementById('admin-login-error');
+  err.classList.add('hidden-view');
+  btn.disabled = true; btn.textContent = 'Memeriksa…';
+  const res = await apiPost({ action:'list', adminPassword: pw });
+  btn.disabled = false; btn.textContent = 'Masuk';
+  if(res.success){
+    adminPassword = pw;
+    submissions = res.data;
+    sessionStorage.setItem(ADMIN_SESSION_KEY, pw);
+    document.getElementById('admin-login').classList.add('hidden-view');
+    document.getElementById('admin-authenticated').classList.remove('hidden-view');
+    setAdminSubview('dashboard');
+  } else {
+    err.textContent = res.error || 'Kata sandi salah.';
+    err.classList.remove('hidden-view');
+  }
+}
+
+function adminLogout(){
+  adminPassword = null;
+  submissions = [];
+  sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  document.getElementById('admin-password-input').value = '';
+  setRole('admin');
+}
+
+function setAdminSubview(view){
+  adminSubview = view;
+  toggleSidebar(false);
+  ['dashboard','review','repositori','statistik','kategori'].forEach(v=>document.getElementById('admin-'+v).classList.toggle('hidden-view', v!==view));
+  ['dashboard','repositori','statistik','kategori'].forEach(v=>{ const el=document.getElementById('nav-'+v); if(el) el.classList.toggle('active', v===view); });
+  const titles = { dashboard:'Dasbor', review:'Review Proposal', repositori:'Repositori Riset', statistik:'Statistik', kategori:'Kategori Topik' };
+  document.getElementById('mobile-admin-title').textContent = titles[view] || 'Dasbor';
+  if(view==='dashboard') renderDashboard();
+  if(view==='repositori') renderRepositori();
+  if(view==='statistik') renderStatistik();
+  if(view==='kategori') renderKategoriAdmin();
+}
+
+function skeletonRows(n){
+  const cell = `<td class="px-6 py-4"><span class="skeleton" style="display:block; height:14px; width:80%"></span></td>`;
+  return Array(n).fill(`<tr>${cell}${cell}${cell}${cell}${cell}${cell}</tr>`).join('');
+}
+
+async function fetchQueue(){
+  document.getElementById('queue-body').innerHTML = skeletonRows(5);
+  const res = await apiPost({ action:'list', adminPassword });
+  if(res.success){
+    submissions = res.data;
+    document.getElementById('last-loaded').textContent = 'Dimuat pukul ' + new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+    renderDashboard();
+  } else { showToast(res.error || 'Gagal memuat data.'); }
+}
+
+function toggleSort(){
+  queueSortDir = queueSortDir === 'desc' ? 'asc' : 'desc';
+  document.getElementById('sort-icon').setAttribute('d', queueSortDir==='desc' ? 'M12 5v14m0 0l-5-5m5 5l5-5' : 'M12 19V5m0 0l-5 5m5-5l5 5');
+  renderQueueTable();
+}
+
+// ---------- STATUS HELPERS ----------
+function badgeClass(status){
+  return { 'Pending':'badge-pending','Under Review':'badge-review','Approved':'badge-approved','Revisi Diminta':'badge-revise','Rejected':'badge-rejected','Completed':'badge-approved' }[status] || 'badge-pending';
+}
+const STATUS_TIMELINE = {
+  'Pending':        [{s:'done'},{s:'pending'},{s:'pending'},{s:'pending'}],
+  'Under Review':   [{s:'done'},{s:'active'},{s:'pending'},{s:'pending'}],
+  'Revisi Diminta': [{s:'done'},{s:'result',v:'revise'},{s:'pending'},{s:'pending'}],
+  'Approved':       [{s:'done'},{s:'done'},{s:'result',v:'approved'},{s:'pending'}],
+  'Rejected':       [{s:'done'},{s:'done'},{s:'result',v:'rejected'},{s:'pending'}],
+  'Completed':      [{s:'done'},{s:'done'},{s:'result',v:'approved'},{s:'done'}]
+};
+const FILL_PCT = {'Pending':'0%','Under Review':'33%','Revisi Diminta':'33%','Approved':'66%','Rejected':'66%','Completed':'100%'};
+
+function stampHTML(step, idx){
+  const num = idx+1;
+  if(step.s==='done') return `<div class="stamp done">${num}</div>`;
+  if(step.s==='active') return `<div class="stamp active">${num}</div>`;
+  if(step.s==='result'){
+    const icon = step.v==='approved' ? '✓' : step.v==='revise' ? '!' : '✕';
+    return `<div class="stamp ${step.v}">${icon}</div>`;
+  }
+  return `<div class="stamp">${num}</div>`;
+}
+
+function timelineHTML(status){
+  const labels = ['Diajukan','Ditinjau SRD','Keputusan','Selesai'];
+  const steps = STATUS_TIMELINE[status] || STATUS_TIMELINE['Pending'];
+  const fill = FILL_PCT[status] || '0%';
+  return `
+  <div class="relative pt-1">
+    <div class="timeline-line"><div class="timeline-line-fill" style="width:${fill}"></div></div>
+    <div class="flex justify-between relative">
+      ${steps.map((st,i)=>`
+        <div class="flex flex-col items-center gap-2 w-1/4">
+          ${stampHTML(st,i)}
+          <p class="text-xs text-center font-medium" style="color:${st.s!=='pending'?'var(--forest)':'var(--ink-muted)'}">${labels[i]}</p>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ---------- STUDENT: FORM ----------
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    if(!file){ resolve(null); return; }
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Membaca satu berkas sekaligus memvalidasi ukurannya — dipanggil satu per satu
+// (bukan Promise.all) supaya kalau ada yang gagal/terlalu besar, jelas berkas mana
+// penyebabnya, dan tidak membebani Apps Script dengan beberapa unggahan sekaligus.
+async function readFileValidated(file, label){
+  if(!file) return null;
+  if(file.size > MAX_FILE_MB * 1024 * 1024){
+    throw new Error(`Berkas "${label}" berukuran ${(file.size/1024/1024).toFixed(1)} MB, melebihi batas ${MAX_FILE_MB} MB. Silakan kompres PDF atau pilih berkas lain.`);
+  }
+  return await fileToBase64(file);
+}
+
+document.getElementById('submission-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const btn = document.getElementById('submit-btn');
+  const btnText = document.getElementById('submit-btn-text');
+  document.getElementById('submission-error').classList.add('hidden-view');
+  btn.disabled = true; btnText.innerHTML = '<span class="spinner inline-block align-middle mr-1"></span> Mengirim…';
+
+  try{
+    const coverFile = document.getElementById('f-cover-letter').files[0];
+    const proposalFile = document.getElementById('f-proposal').files[0];
+    const instrumentFile = document.getElementById('f-instrument').files[0];
+
+    if(!coverFile){
+      document.getElementById('submission-error').textContent = 'Surat pengantar kampus wajib diunggah.';
+      document.getElementById('submission-error').classList.remove('hidden-view');
+      btn.disabled = false; btnText.textContent = 'Kirim Pengajuan';
+      return;
+    }
+    if(!proposalFile){
+      document.getElementById('submission-error').textContent = 'Draf proposal riset wajib diunggah.';
+      document.getElementById('submission-error').classList.remove('hidden-view');
+      btn.disabled = false; btnText.textContent = 'Kirim Pengajuan';
+      return;
+    }
+
+    let coverB64, proposalB64, instrumentB64;
+    try{
+      coverB64 = await readFileValidated(coverFile, 'Surat Pengantar Kampus');
+      proposalB64 = await readFileValidated(proposalFile, 'Draf Proposal');
+      instrumentB64 = await readFileValidated(instrumentFile, 'Instrumen Penelitian');
+    } catch(sizeErr){
+      document.getElementById('submission-error').textContent = sizeErr.message;
+      document.getElementById('submission-error').classList.remove('hidden-view');
+      btn.disabled = false; btnText.textContent = 'Kirim Pengajuan';
+      return;
+    }
+
+    const payload = {
+      action:'submit',
+      name: document.getElementById('f-name').value,
+      university: document.getElementById('f-university').value,
+      identityType: document.getElementById('f-identity-type').value,
+      identityNumber: document.getElementById('f-identity-number').value,
+      institution: document.getElementById('f-university').value,
+      faculty: document.getElementById('f-faculty').value,
+      studyProgram: document.getElementById('f-program').value,
+      whatsapp: document.getElementById('f-whatsapp').value,
+      email: document.getElementById('f-email').value,
+      thesisType: document.getElementById('f-type').value,
+      title: document.getElementById('f-title').value,
+      topicCategory: document.getElementById('f-topic').value,
+      location: document.getElementById('f-location').value,
+      startDate: document.getElementById('f-start').value,
+      endDate: document.getElementById('f-end').value,
+      coverLetterBase64: coverB64, coverLetterName: coverFile ? coverFile.name : '',
+      proposalBase64: proposalB64, proposalName: proposalFile ? proposalFile.name : '',
+      instrumentBase64: instrumentB64, instrumentName: instrumentFile ? instrumentFile.name : ''
+    };
+
+    const res = await apiPost(payload);
+    if(res.success){
+      document.getElementById('success-id').textContent = res.displayId;
+      document.getElementById('submission-success').classList.remove('hidden-view');
+      this.reset();
+      document.getElementById('track-input').value = res.displayId;
+      trackSubmission();
+      window.scrollTo({top:0, behavior:'smooth'});
+    } else {
+      document.getElementById('submission-error').textContent = res.error || 'Gagal mengirim pengajuan.';
+      document.getElementById('submission-error').classList.remove('hidden-view');
+    }
+  } catch(err){
+    document.getElementById('submission-error').textContent = 'Terjadi kesalahan jaringan: ' + err;
+    document.getElementById('submission-error').classList.remove('hidden-view');
+  } finally {
+    btn.disabled = false; btnText.textContent = 'Kirim Pengajuan';
+  }
+});
+
+// ---------- STUDENT: TRACKER ----------
+async function trackSubmission(){
+  const id = document.getElementById('track-input').value.trim().toUpperCase();
+  const box = document.getElementById('track-result');
+  const btn = document.getElementById('track-btn');
+  if(!id) return;
+  btn.disabled = true; btn.textContent = '…';
+  const res = await apiGet({ action:'track', id });
+  btn.disabled = false; btn.textContent = 'Lacak';
+
+  if(!res.success){
+    box.innerHTML = `<p class="text-sm p-4 rounded-lg" style="background:var(--red-tint); color:var(--red)">${res.error || 'Nomor pengajuan tidak ditemukan.'}</p>`;
+    return;
+  }
+  const s = res.data;
+  box.innerHTML = `
+    <div class="p-4 rounded-lg mb-4" style="background:var(--sage-light)">
+      <p class="font-mono text-sm font-semibold" style="color:var(--sage)">${s.displayId}</p>
+      <p class="font-medium text-sm mt-1">${s.title}</p>
+      <p class="text-xs mt-0.5" style="color:var(--ink-muted)">${s.name} · ${s.institution}</p>
+    </div>
+    ${timelineHTML(s.status)}
+    ${s.letterUrl ? `<a href="${s.letterUrl}" target="_blank" class="block text-center mt-4 py-2.5 rounded-lg text-sm font-medium btn-gold">Unduh Surat Balasan</a>` : ''}
+  `;
+}
+
+// ---------- ADMIN: DASHBOARD ----------
+function renderDashboard(){ renderStatCards(); renderQueueTable(); }
+
+function renderStatCards(){
+  const counts = {
+    pending: submissions.filter(s=>s.Status==='Pending').length,
+    review: submissions.filter(s=>s.Status==='Under Review' || s.Status==='Revisi Diminta').length,
+    approved: submissions.filter(s=>['Approved','Completed'].includes(s.Status)).length,
+    total: submissions.length
+  };
+  const cards = [
+    {label:'Antrean Baru', value:counts.pending, bg:'var(--gold-tint)', fg:'var(--gold-deep)', icon:'M12 6v6l4 2'},
+    {label:'Sedang Ditinjau', value:counts.review, bg:'var(--sage-light)', fg:'var(--sage)', icon:'M9 12h6M9 16h6M9 8h6M5 4h14v16H5z'},
+    {label:'Disetujui/Selesai', value:counts.approved, bg:'#EFEBDD', fg:'#7A6E4E', icon:'M20 6L9 17l-5-5'},
+    {label:'Total Pengajuan', value:counts.total, bg:'var(--red-tint)', fg:'var(--red)', icon:'M4 20V10m6 10V4m6 16v-7'}
+  ];
+  document.getElementById('admin-stat-cards').innerHTML = cards.map(c=>`
+    <div class="card p-5 flex items-center gap-4">
+      <div class="w-11 h-11 rounded-lg flex items-center justify-center shrink-0" style="background:${c.bg}; color:${c.fg}">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="${c.icon}"/></svg>
+      </div>
+      <div><p class="text-xs font-medium" style="color:var(--ink-muted)">${c.label}</p><p class="font-display text-2xl font-semibold" style="color:var(--forest)">${c.value}</p></div>
+    </div>`).join('');
+}
+
+function fmtDate(v){
+  if(!v) return '–';
+  const d = new Date(v);
+  return isNaN(d) ? String(v).slice(0,10) : d.toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'});
+}
+
+function renderQueueTable(){
+  const q = (document.getElementById('admin-search')?.value || '').toLowerCase();
+  const statusFilter = document.getElementById('admin-status-filter')?.value || '';
+  const filtered = submissions.filter(s =>
+    ((s.NamaPeneliti||'').toLowerCase().includes(q) || (s.DisplayID||'').toLowerCase().includes(q)) &&
+    (!statusFilter || s.Status === statusFilter)
+  ).sort((a,b) => {
+    const da = new Date(a.Timestamp).getTime() || 0;
+    const db = new Date(b.Timestamp).getTime() || 0;
+    return queueSortDir === 'desc' ? db - da : da - db;
+  });
+  document.getElementById('queue-count').textContent = `${filtered.length} pengajuan`;
+  document.getElementById('queue-body').innerHTML = filtered.map(s=>`
+    <tr class="hover:bg-[var(--sage-light)] transition">
+      <td class="px-6 py-4 font-mono text-sm font-medium" style="color:var(--sage)">${s.DisplayID}</td>
+      <td class="px-6 py-4"><div class="font-medium text-sm">${s.NamaPeneliti}</div><div class="text-xs mt-0.5" style="color:var(--ink-muted)">${s.Institusi} · ${s.JenjangPenelitian}</div></td>
+      <td class="px-6 py-4 text-sm max-w-xs truncate" style="color:var(--ink-muted)" title="${s.JudulRiset}">${s.JudulRiset}</td>
+      <td class="px-6 py-4 text-sm" style="color:var(--ink-muted)">${fmtDate(s.Timestamp)}</td>
+      <td class="px-6 py-4"><span class="badge ${badgeClass(s.Status)}">${s.Status}</span></td>
+      <td class="px-6 py-4 text-right">
+        <button onclick="openReview('${s.DisplayID}')" class="inline-flex items-center gap-1 px-3 py-1.5 border rounded-lg text-xs font-medium hover:bg-[var(--sage-light)]" style="border-color:var(--line); color:var(--forest)">Review</button>
+      </td>
+    </tr>`).join('') || `<tr><td colspan="6" class="px-6 py-10 text-center text-sm" style="color:var(--ink-muted)">Tidak ada pengajuan yang cocok.</td></tr>`;
+}
+
+// ---------- ADMIN: REVIEW ----------
+async function openReview(id){
+  currentReviewId = id;
+  let s = submissions.find(x=>x.DisplayID===id);
+  if(s.Status==='Pending'){
+    const res = await apiPost({ action:'decide', displayId:id, newStatus:'Under Review', adminPassword });
+    if(res.success){ s.Status = 'Under Review'; }
+  }
+  renderReview(s);
+  setAdminSubview('review');
+  loadReviewLog(id);
+}
+
+async function loadReviewLog(id){
+  const box = document.getElementById('review-log');
+  box.innerHTML = `<li style="color:var(--ink-muted)">Memuat riwayat…</li>`;
+  const res = await apiPost({ action:'getLogs', displayId:id, adminPassword });
+  if(!res.success){
+    box.innerHTML = `<li style="color:var(--red)">${res.error || 'Gagal memuat riwayat.'}</li>`;
+    return;
+  }
+  box.innerHTML = res.data.length ? res.data.map(l=>`
+    <li class="flex items-start gap-3">
+      <span class="w-1.5 h-1.5 rounded-full shrink-0 mt-1.5" style="background:var(--gold)"></span>
+      <span><span style="color:var(--ink-muted)">${fmtDate(l.timestamp)}</span> — <span class="font-medium">${l.action}</span>${l.reviewer ? ` <span style="color:var(--ink-muted)">(${l.reviewer})</span>` : ''}</span>
+    </li>`).join('') : `<li style="color:var(--ink-muted)">Belum ada riwayat.</li>`;
+}
+
+function renderReview(s){
+  document.getElementById('review-id').textContent = s.DisplayID;
+  document.getElementById('review-name').textContent = s.NamaPeneliti;
+  document.getElementById('review-univ').textContent = s.Institusi;
+  document.getElementById('review-type').textContent = s.JenjangPenelitian;
+  document.getElementById('review-topic').textContent = s.KategoriTopik;
+  document.getElementById('review-location').textContent = s.LokasiRiset || '–';
+  document.getElementById('review-duration').textContent = (s.TanggalMulai && s.TanggalSelesai) ? `${fmtDate(s.TanggalMulai)} – ${fmtDate(s.TanggalSelesai)}` : '–';
+  document.getElementById('review-timeline').innerHTML = timelineHTML(s.Status);
+  const badge = document.getElementById('review-status-badge');
+  badge.className = 'badge ' + badgeClass(s.Status);
+  badge.textContent = s.Status;
+
+  const files = [
+    {label:'Surat Pengantar Kampus', url:s.LinkSuratPengantar},
+    {label:'Draf Proposal', url:s.LinkProposal},
+    {label:'Instrumen Penelitian', url:s.LinkInstrumen}
+  ].filter(f=>f.url);
+  document.getElementById('review-files').innerHTML = files.length ? files.map(f=>`
+    <a href="${f.url}" target="_blank" class="flex items-center gap-2 hover:underline" style="color:var(--sage)">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 6v13a1 1 0 001 1h14a1 1 0 001-1V6" stroke-linecap="round"/></svg> ${f.label}
+    </a>`).join('') : `<p style="color:var(--ink-muted)">Tidak ada berkas terlampir.</p>`;
+
+  const locked = ['Approved','Revisi Diminta','Rejected','Completed'].includes(s.Status);
+  document.getElementById('decision-form').classList.toggle('hidden-view', locked);
+  const lockedBox = document.getElementById('decision-locked');
+  lockedBox.classList.toggle('hidden-view', !locked);
+  if(locked) lockedBox.innerHTML = `Keputusan tercatat: <b>${s.Status}</b>. Detail lengkap ada di tab LogAdmin.`;
+  document.getElementById('review-note').value = '';
+  document.getElementById('review-letter').value = '';
+}
+
+async function decide(status){
+  if(status === 'Rejected'){
+    showConfirm('Yakin ingin menolak pengajuan ini? Email penolakan akan langsung terkirim ke mahasiswa dan tindakan ini tidak dapat dibatalkan.', () => performDecide(status));
+    return;
+  }
+  performDecide(status);
+}
+
+async function performDecide(status){
+  const s = submissions.find(x=>x.DisplayID===currentReviewId);
+  const notes = document.getElementById('review-note').value.trim();
+  const letterUrl = document.getElementById('review-letter').value.trim();
+  const res = await apiPost({ action:'decide', displayId:currentReviewId, newStatus:status, notes, letterUrl, adminPassword, reviewerName:'Admin SRD' });
+  if(res.success){
+    s.Status = status;
+    if(letterUrl) s.LinkSuratBalasan = letterUrl;
+    const verb = status==='Approved' ? 'disetujui' : status==='Revisi Diminta' ? 'dikembalikan untuk revisi' : 'ditolak';
+    showToast(`Pengajuan ${s.DisplayID} berhasil ${verb}.`);
+    setTimeout(()=>{ setAdminSubview('dashboard'); }, 1400);
+  } else {
+    showToast(res.error || 'Gagal menyimpan keputusan.');
+  }
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toast-message').textContent = msg;
+  t.classList.remove('hidden-view'); t.classList.add('toast-enter');
+  setTimeout(()=>t.classList.add('hidden-view'), 2800);
+}
+
+// ---------- ADMIN: REPOSITORI ----------
+function renderRepositori(){
+  const approved = submissions.filter(s=>['Approved','Completed'].includes(s.Status));
+  document.getElementById('repo-grid').innerHTML = approved.map(s=>`
+    <div class="card p-6 flex flex-col">
+      <p class="eyebrow mb-2">${s.JenjangPenelitian} · ${fmtDate(s.Timestamp)}</p>
+      <p class="font-display font-semibold leading-snug mb-3" style="color:var(--forest)">${s.JudulRiset}</p>
+      <p class="text-sm mt-auto pt-3 border-t" style="border-color:var(--line); color:var(--ink-muted)">${s.NamaPeneliti}<br>${s.Institusi}</p>
+    </div>`).join('') || `<p class="text-sm col-span-3" style="color:var(--ink-muted)">Belum ada riset yang disetujui.</p>`;
+}
+
+// ---------- ADMIN: STATISTIK ----------
+function renderStatistik(){
+  const statuses = ['Pending','Under Review','Revisi Diminta','Approved','Rejected','Completed'];
+  const colors = {'Pending':'#EFEBDD','Under Review':'#DBE64C','Revisi Diminta':'#74C365','Approved':'#00804C','Rejected':'#B3432D','Completed':'#1E488F'};
+  const counts = statuses.map(st=>submissions.filter(s=>s.Status===st).length);
+  const total = submissions.length || 1;
+  const r=70, cx=90, cy=90, circ=2*Math.PI*r;
+  let offset=0, arcs='';
+  statuses.forEach((st,i)=>{
+    const len = (counts[i]/total)*circ;
+    if(len>0) arcs += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${colors[st]}" stroke-width="22" stroke-dasharray="${len} ${circ-len}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    offset += len;
+  });
+  document.getElementById('donut').innerHTML = arcs + `<text x="90" y="85" text-anchor="middle" font-size="26" font-weight="600" fill="var(--forest)" font-family="Fraunces,serif">${total}</text><text x="90" y="104" text-anchor="middle" font-size="11" fill="var(--ink-muted)">pengajuan</text>`;
+  document.getElementById('donut-legend').innerHTML = statuses.map((st,i)=>`
+    <div class="flex items-center justify-between text-sm">
+      <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:${colors[st]}"></span>${st}</span>
+      <span class="font-mono" style="color:var(--ink-muted)">${counts[i]}</span>
+    </div>`).join('');
+
+  const univs = {};
+  submissions.forEach(s=>{ if(s.Institusi) univs[s.Institusi] = (univs[s.Institusi]||0)+1; });
+  const maxCount = Math.max(1, ...Object.values(univs));
+  document.getElementById('univ-bars').innerHTML = Object.entries(univs).sort((a,b)=>b[1]-a[1]).map(([u,c])=>`
+    <div>
+      <div class="flex justify-between text-sm mb-1"><span>${u}</span><span class="font-mono" style="color:var(--ink-muted)">${c}</span></div>
+      <div class="h-2 rounded-full" style="background:var(--sage-light)"><div class="h-2 rounded-full" style="background:var(--sage); width:${(c/maxCount)*100}%"></div></div>
+    </div>`).join('') || `<p class="text-sm" style="color:var(--ink-muted)">Belum ada data.</p>`;
+}
+
+// ---------- KATEGORI TOPIK (dinamis, dikelola admin) ----------
+
+// Dipanggil saat halaman dibuka, mengisi dropdown di formulir mahasiswa.
+async function loadCategories(){
+  try{
+    const res = await apiGet({ action:'categories' });
+    if(res.success && res.data.length){ categories = res.data; }
+    else { categories = ['Pemberdayaan Ekonomi','Pendidikan','Kesehatan','Fiqh Zakat','Tata Kelola Kelembagaan']; }
+  } catch(err){
+    categories = ['Pemberdayaan Ekonomi','Pendidikan','Kesehatan','Fiqh Zakat','Tata Kelola Kelembagaan'];
+  }
+  populateTopicDropdown();
+}
+
+function populateTopicDropdown(){
+  const sel = document.getElementById('f-topic');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Kategori topik *</option>' + categories.map(c=>`<option>${c}</option>`).join('');
+  if(categories.includes(current)) sel.value = current;
+}
+
+// Panel admin: tampilkan semua kategori (aktif & nonaktif) beserta tombolnya.
+async function renderKategoriAdmin(){
+  const box = document.getElementById('category-list');
+  box.innerHTML = `<p class="p-4 text-sm" style="color:var(--ink-muted)">Memuat…</p>`;
+  const res = await apiPost({ action:'listCategoriesAdmin', adminPassword });
+  if(!res.success){ box.innerHTML = `<p class="p-4 text-sm" style="color:var(--red)">${res.error}</p>`; return; }
+
+  box.innerHTML = res.data.map(c=>`
+    <div class="px-5 py-3 flex items-center justify-between gap-3">
+      <span class="text-sm min-w-0 break-words ${c.active ? '' : 'line-through'}" style="color:${c.active ? 'var(--ink)' : 'var(--ink-muted)'}">${c.name}</span>
+      <button onclick="toggleCategoryHandler('${c.name.replace(/'/g,"\\'")}', ${!c.active})"
+        class="text-xs font-medium px-3 py-1.5 rounded-lg border shrink-0 whitespace-nowrap" style="border-color:var(--line); color:${c.active ? 'var(--red)' : 'var(--sage)'}">
+        ${c.active ? 'Nonaktifkan' : 'Aktifkan'}
+      </button>
+    </div>`).join('') || `<p class="p-4 text-sm" style="color:var(--ink-muted)">Belum ada kategori.</p>`;
+}
+
+async function addCategoryHandler(){
+  const input = document.getElementById('new-category-input');
+  const btn = document.getElementById('add-category-btn');
+  const err = document.getElementById('category-error');
+  const name = input.value.trim();
+  err.classList.add('hidden-view');
+  if(!name) return;
+  btn.disabled = true; btn.textContent = 'Menambah…';
+  const res = await apiPost({ action:'addCategory', name, adminPassword });
+  btn.disabled = false; btn.textContent = 'Tambah';
+  if(res.success){
+    input.value = '';
+    renderKategoriAdmin();
+    loadCategories(); // sinkronkan dropdown formulir mahasiswa
+    showToast(`Kategori "${name}" ditambahkan.`);
+  } else {
+    err.textContent = res.error || 'Gagal menambah kategori.';
+    err.classList.remove('hidden-view');
+  }
+}
+
+async function toggleCategoryHandler(name, newActive){
+  const res = await apiPost({ action:'toggleCategory', name, active:newActive, adminPassword });
+  if(res.success){
+    renderKategoriAdmin();
+    loadCategories();
+    showToast(newActive ? `Kategori "${name}" diaktifkan.` : `Kategori "${name}" dinonaktifkan.`);
+  } else {
+    showToast(res.error || 'Gagal mengubah kategori.');
+  }
+}
+
+// ---------- KONFIRMASI TINDAKAN PENTING ----------
+function showConfirm(message, onConfirm){
+  document.getElementById('confirm-message').textContent = message;
+  confirmCallback = onConfirm;
+  document.getElementById('confirm-modal').classList.remove('hidden-view');
+}
+function closeConfirm(){
+  document.getElementById('confirm-modal').classList.add('hidden-view');
+  confirmCallback = null;
+}
+document.getElementById('confirm-ok-btn').addEventListener('click', () => {
+  const cb = confirmCallback;
+  closeConfirm();
+  if(cb) cb();
+});
+
+// ---------- STUDENT: OUTPUT & PENYELESAIAN ----------
+async function checkOutputEligibility(){
+  const id = document.getElementById('output-id-input').value.trim().toUpperCase();
+  const btn = document.getElementById('output-verify-btn');
+  const ineligible = document.getElementById('output-ineligible');
+  const formWrap = document.getElementById('output-form-wrap');
+  ineligible.classList.add('hidden-view');
+  formWrap.classList.add('hidden-view');
+  document.getElementById('output-success').classList.add('hidden-view');
+  if(!id) return;
+
+  btn.disabled = true; btn.textContent = 'Memeriksa…';
+  const res = await apiGet({ action:'track', id });
+  btn.disabled = false; btn.textContent = 'Verifikasi';
+
+  if(!res.success){
+    ineligible.textContent = res.error || 'Nomor pengajuan tidak ditemukan.';
+    ineligible.classList.remove('hidden-view');
+    return;
+  }
+  if(res.data.status !== 'Approved'){
+    ineligible.textContent = `Status pengajuan ini saat ini "${res.data.status}". Pengiriman output hanya bisa dilakukan setelah status Approved.`;
+    ineligible.classList.remove('hidden-view');
+    return;
+  }
+  currentOutputId = id;
+  document.getElementById('output-title-preview').textContent = res.data.title + ' — ' + res.data.name;
+  formWrap.classList.remove('hidden-view');
+}
+
+document.getElementById('output-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const btn = document.getElementById('output-submit-btn');
+  document.getElementById('output-error').classList.add('hidden-view');
+  btn.disabled = true; btn.textContent = 'Mengirim…';
+
+  try{
+    const infografisFile = document.getElementById('o-infografis').files[0];
+    const naskahFile = document.getElementById('o-naskah').files[0];
+
+    if(!naskahFile){
+      document.getElementById('output-error').textContent = 'Naskah akademik final wajib diunggah.';
+      document.getElementById('output-error').classList.remove('hidden-view');
+      btn.disabled = false; btn.textContent = 'Kirim Output';
+      return;
+    }
+
+    let infografisB64, naskahB64;
+    try{
+      infografisB64 = await readFileValidated(infografisFile, 'Infografis');
+      naskahB64 = await readFileValidated(naskahFile, 'Naskah Akademik Final');
+    } catch(sizeErr){
+      document.getElementById('output-error').textContent = sizeErr.message;
+      document.getElementById('output-error').classList.remove('hidden-view');
+      return;
+    }
+
+    const res = await apiPost({
+      action:'submitOutput',
+      displayId: currentOutputId,
+      executiveSummary: document.getElementById('o-summary').value,
+      recommendations: document.getElementById('o-recommendations').value,
+      infografisBase64: infografisB64, infografisName: infografisFile ? infografisFile.name : '',
+      naskahBase64: naskahB64, naskahName: naskahFile ? naskahFile.name : '',
+      datasetLink: document.getElementById('o-dataset').value
+    });
+
+    if(res.success){
+      document.getElementById('output-success').classList.remove('hidden-view');
+      this.reset();
+      this.classList.add('hidden-view');
+    } else {
+      document.getElementById('output-error').textContent = res.error || 'Gagal mengirim output.';
+      document.getElementById('output-error').classList.remove('hidden-view');
+    }
+  } catch(err){
+    document.getElementById('output-error').textContent = 'Terjadi kesalahan jaringan: ' + err;
+    document.getElementById('output-error').classList.remove('hidden-view');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Kirim Output';
+  }
+});
+
+// ---------- SESI ADMIN (bertahan lewat sessionStorage — hilang saat tab ditutup) ----------
+async function tryRestoreAdminSession(){
+  const saved = sessionStorage.getItem(ADMIN_SESSION_KEY);
+  if(!saved) return;
+  const res = await apiPost({ action:'list', adminPassword: saved });
+  if(res.success){
+    adminPassword = saved;
+    submissions = res.data;
+  } else {
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  }
+}
+
+// ---------- INIT ----------
+document.getElementById('track-input').addEventListener('keydown', e => { if(e.key === 'Enter') trackSubmission(); });
+document.getElementById('output-id-input').addEventListener('keydown', e => { if(e.key === 'Enter') checkOutputEligibility(); });
+document.getElementById('admin-password-input').addEventListener('keydown', e => { if(e.key === 'Enter') attemptAdminLogin(); });
+loadCategories();
+tryRestoreAdminSession();
+</script>
+</body>
+</html>
