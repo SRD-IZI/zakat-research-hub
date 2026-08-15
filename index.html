@@ -143,35 +143,15 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
 <main id="view-student">
   <section class="max-w-7xl mx-auto px-5 sm:px-8 pt-14 pb-10 relative overflow-hidden">
     <div class="hero-aurora"></div>
-    <div class="hero-content flex flex-col lg:flex-row lg:items-center gap-10">
-      <div class="max-w-2xl fade-up">
-        <p class="eyebrow mb-3">© Divisi SRD (System, Research &amp; Development)</p>
-        <h1 class="font-display text-[2.35rem] sm:text-[3rem] leading-[1.08] font-semibold tracking-tight" style="color:var(--forest)">
-          Ajukan riset zakat Anda,<br>
-          <span style="background:var(--grad-primary); -webkit-background-clip:text; background-clip:text; color:transparent;">mulai dari sini.</span>
-        </h1>
-        <p class="mt-5 text-[1.05rem] leading-relaxed" style="color:var(--ink-muted)">
-          SRD LAZNAS IZI membuka akses data dan pendampingan bagi mahasiswa yang menulis skripsi, tesis, atau disertasi seputar zakat. Isi formulir di bawah, dan tim kami akan meninjaunya.
-        </p>
-      </div>
-
-      <div class="hidden lg:block shrink-0 w-72 card card-accent p-6 fade-up" style="animation-delay:.1s">
-        <p class="text-xs font-semibold mb-4" style="color:var(--ink-muted)">ALUR SINGKAT</p>
-        <div class="space-y-4">
-          <div class="flex items-start gap-3">
-            <div class="stamp done shrink-0" style="width:1.75rem;height:1.75rem;font-size:.6rem">1</div>
-            <div><p class="text-sm font-medium" style="color:var(--forest)">Ajukan proposal</p><p class="text-xs" style="color:var(--ink-muted)">Isi formulir &amp; unggah berkas</p></div>
-          </div>
-          <div class="flex items-start gap-3">
-            <div class="stamp active shrink-0" style="width:1.75rem;height:1.75rem;font-size:.6rem">2</div>
-            <div><p class="text-sm font-medium" style="color:var(--forest)">Ditinjau SRD</p><p class="text-xs" style="color:var(--ink-muted)">Tim meninjau kelengkapan</p></div>
-          </div>
-          <div class="flex items-start gap-3">
-            <div class="stamp approved shrink-0" style="width:1.75rem;height:1.75rem;font-size:.6rem">✓</div>
-            <div><p class="text-sm font-medium" style="color:var(--forest)">Keputusan</p><p class="text-xs" style="color:var(--ink-muted)">Rata-rata 2–3 hari kerja</p></div>
-          </div>
-        </div>
-      </div>
+    <div class="hero-content max-w-4xl fade-up">
+      <p class="eyebrow mb-3">© Divisi SRD (System, Research &amp; Development)</p>
+      <h1 class="font-display text-[2.35rem] sm:text-[3.25rem] leading-[1.08] font-semibold tracking-tight" style="color:var(--forest)">
+        Ajukan riset zakat Anda,<br>
+        <span style="background:var(--grad-primary); -webkit-background-clip:text; background-clip:text; color:transparent;">mulai dari sini.</span>
+      </h1>
+      <p class="mt-5 text-[1.05rem] sm:text-[1.15rem] leading-relaxed max-w-2xl" style="color:var(--ink-muted)">
+        SRD LAZNAS IZI membuka akses data dan pendampingan bagi mahasiswa yang menulis skripsi, tesis, atau disertasi seputar zakat. Isi formulir di bawah, dan tim kami akan meninjaunya.
+      </p>
     </div>
   </section>
 
@@ -591,12 +571,30 @@ function toggleSidebar(open){
 
 // ---------- FETCH HELPERS ----------
 async function apiGet(params){
-  const res = await fetch(WEB_APP_URL + '?' + new URLSearchParams(params).toString());
-  return res.json();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+  try{
+    const res = await fetch(WEB_APP_URL + '?' + new URLSearchParams(params).toString(), { signal: controller.signal });
+    return await res.json();
+  } catch(err){
+    if(err.name === 'AbortError') throw new Error('Server tidak merespons dalam 20 detik. Coba lagi.');
+    throw new Error('Gagal terhubung ke server. Periksa koneksi internet Anda atau coba lagi.');
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 async function apiPost(payload){
-  const res = await fetch(WEB_APP_URL, { method:'POST', body: JSON.stringify(payload) });
-  return res.json();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+  try{
+    const res = await fetch(WEB_APP_URL, { method:'POST', body: JSON.stringify(payload), signal: controller.signal });
+    return await res.json();
+  } catch(err){
+    if(err.name === 'AbortError') throw new Error('Server tidak merespons dalam 20 detik. Coba lagi.');
+    throw new Error('Gagal terhubung ke server. Periksa koneksi internet Anda atau coba lagi.');
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 // ---------- ROLE / VIEW SWITCH ----------
@@ -617,18 +615,24 @@ async function attemptAdminLogin(){
   const err = document.getElementById('admin-login-error');
   err.classList.add('hidden-view');
   btn.disabled = true; btn.textContent = 'Memeriksa…';
-  const res = await apiPost({ action:'list', adminPassword: pw });
-  btn.disabled = false; btn.textContent = 'Masuk';
-  if(res.success){
-    adminPassword = pw;
-    submissions = res.data;
-    sessionStorage.setItem(ADMIN_SESSION_KEY, pw);
-    document.getElementById('admin-login').classList.add('hidden-view');
-    document.getElementById('admin-authenticated').classList.remove('hidden-view');
-    setAdminSubview('dashboard');
-  } else {
-    err.textContent = res.error || 'Kata sandi salah.';
+  try{
+    const res = await apiPost({ action:'list', adminPassword: pw });
+    if(res.success){
+      adminPassword = pw;
+      submissions = res.data;
+      sessionStorage.setItem(ADMIN_SESSION_KEY, pw);
+      document.getElementById('admin-login').classList.add('hidden-view');
+      document.getElementById('admin-authenticated').classList.remove('hidden-view');
+      setAdminSubview('dashboard');
+    } else {
+      err.textContent = res.error || 'Kata sandi salah.';
+      err.classList.remove('hidden-view');
+    }
+  } catch(networkErr){
+    err.textContent = networkErr.message || 'Gagal terhubung ke server.';
     err.classList.remove('hidden-view');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Masuk';
   }
 }
 
@@ -660,12 +664,18 @@ function skeletonRows(n){
 
 async function fetchQueue(){
   document.getElementById('queue-body').innerHTML = skeletonRows(5);
-  const res = await apiPost({ action:'list', adminPassword });
-  if(res.success){
-    submissions = res.data;
-    document.getElementById('last-loaded').textContent = 'Dimuat pukul ' + new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
-    renderDashboard();
-  } else { showToast(res.error || 'Gagal memuat data.'); }
+  try{
+    const res = await apiPost({ action:'list', adminPassword });
+    if(res.success){
+      submissions = res.data;
+      document.getElementById('last-loaded').textContent = 'Dimuat pukul ' + new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+      renderDashboard();
+    } else {
+      document.getElementById('queue-body').innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-sm" style="color:var(--red)">${res.error || 'Gagal memuat data.'}</td></tr>`;
+    }
+  } catch(err){
+    document.getElementById('queue-body').innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-sm" style="color:var(--red)">${err.message}</td></tr>`;
+  }
 }
 
 function toggleSort(){
@@ -824,23 +834,27 @@ async function trackSubmission(){
   const btn = document.getElementById('track-btn');
   if(!id) return;
   btn.disabled = true; btn.textContent = '…';
-  const res = await apiGet({ action:'track', id });
-  btn.disabled = false; btn.textContent = 'Lacak';
-
-  if(!res.success){
-    box.innerHTML = `<p class="text-sm p-4 rounded-lg" style="background:var(--red-tint); color:var(--red)">${res.error || 'Nomor pengajuan tidak ditemukan.'}</p>`;
-    return;
+  try{
+    const res = await apiGet({ action:'track', id });
+    if(!res.success){
+      box.innerHTML = `<p class="text-sm p-4 rounded-lg" style="background:var(--red-tint); color:var(--red)">${res.error || 'Nomor pengajuan tidak ditemukan.'}</p>`;
+      return;
+    }
+    const s = res.data;
+    box.innerHTML = `
+      <div class="p-4 rounded-lg mb-4" style="background:var(--sage-light)">
+        <p class="font-mono text-sm font-semibold" style="color:var(--sage)">${s.displayId}</p>
+        <p class="font-medium text-sm mt-1">${s.title}</p>
+        <p class="text-xs mt-0.5" style="color:var(--ink-muted)">${s.name} · ${s.institution}</p>
+      </div>
+      ${timelineHTML(s.status)}
+      ${s.letterUrl ? `<a href="${s.letterUrl}" target="_blank" class="block text-center mt-4 py-2.5 rounded-lg text-sm font-medium btn-gold">Unduh Surat Balasan</a>` : ''}
+    `;
+  } catch(err){
+    box.innerHTML = `<p class="text-sm p-4 rounded-lg" style="background:var(--red-tint); color:var(--red)">${err.message}</p>`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Lacak';
   }
-  const s = res.data;
-  box.innerHTML = `
-    <div class="p-4 rounded-lg mb-4" style="background:var(--sage-light)">
-      <p class="font-mono text-sm font-semibold" style="color:var(--sage)">${s.displayId}</p>
-      <p class="font-medium text-sm mt-1">${s.title}</p>
-      <p class="text-xs mt-0.5" style="color:var(--ink-muted)">${s.name} · ${s.institution}</p>
-    </div>
-    ${timelineHTML(s.status)}
-    ${s.letterUrl ? `<a href="${s.letterUrl}" target="_blank" class="block text-center mt-4 py-2.5 rounded-lg text-sm font-medium btn-gold">Unduh Surat Balasan</a>` : ''}
-  `;
 }
 
 // ---------- ADMIN: DASHBOARD ----------
@@ -904,8 +918,10 @@ async function openReview(id){
   currentReviewId = id;
   let s = submissions.find(x=>x.DisplayID===id);
   if(s.Status==='Pending'){
-    const res = await apiPost({ action:'decide', displayId:id, newStatus:'Under Review', adminPassword });
-    if(res.success){ s.Status = 'Under Review'; }
+    try{
+      const res = await apiPost({ action:'decide', displayId:id, newStatus:'Under Review', adminPassword });
+      if(res.success){ s.Status = 'Under Review'; }
+    } catch(err){ showToast('Gagal menandai sebagai ditinjau: ' + err.message); }
   }
   renderReview(s);
   setAdminSubview('review');
@@ -915,16 +931,20 @@ async function openReview(id){
 async function loadReviewLog(id){
   const box = document.getElementById('review-log');
   box.innerHTML = `<li style="color:var(--ink-muted)">Memuat riwayat…</li>`;
-  const res = await apiPost({ action:'getLogs', displayId:id, adminPassword });
-  if(!res.success){
-    box.innerHTML = `<li style="color:var(--red)">${res.error || 'Gagal memuat riwayat.'}</li>`;
-    return;
+  try{
+    const res = await apiPost({ action:'getLogs', displayId:id, adminPassword });
+    if(!res.success){
+      box.innerHTML = `<li style="color:var(--red)">${res.error || 'Gagal memuat riwayat.'}</li>`;
+      return;
+    }
+    box.innerHTML = res.data.length ? res.data.map(l=>`
+      <li class="flex items-start gap-3">
+        <span class="w-1.5 h-1.5 rounded-full shrink-0 mt-1.5" style="background:var(--gold)"></span>
+        <span><span style="color:var(--ink-muted)">${fmtDate(l.timestamp)}</span> — <span class="font-medium">${l.action}</span>${l.reviewer ? ` <span style="color:var(--ink-muted)">(${l.reviewer})</span>` : ''}</span>
+      </li>`).join('') : `<li style="color:var(--ink-muted)">Belum ada riwayat.</li>`;
+  } catch(err){
+    box.innerHTML = `<li style="color:var(--red)">${err.message}</li>`;
   }
-  box.innerHTML = res.data.length ? res.data.map(l=>`
-    <li class="flex items-start gap-3">
-      <span class="w-1.5 h-1.5 rounded-full shrink-0 mt-1.5" style="background:var(--gold)"></span>
-      <span><span style="color:var(--ink-muted)">${fmtDate(l.timestamp)}</span> — <span class="font-medium">${l.action}</span>${l.reviewer ? ` <span style="color:var(--ink-muted)">(${l.reviewer})</span>` : ''}</span>
-    </li>`).join('') : `<li style="color:var(--ink-muted)">Belum ada riwayat.</li>`;
 }
 
 function renderReview(s){
@@ -971,15 +991,19 @@ async function performDecide(status){
   const s = submissions.find(x=>x.DisplayID===currentReviewId);
   const notes = document.getElementById('review-note').value.trim();
   const letterUrl = document.getElementById('review-letter').value.trim();
-  const res = await apiPost({ action:'decide', displayId:currentReviewId, newStatus:status, notes, letterUrl, adminPassword, reviewerName:'Admin SRD' });
-  if(res.success){
-    s.Status = status;
-    if(letterUrl) s.LinkSuratBalasan = letterUrl;
-    const verb = status==='Approved' ? 'disetujui' : status==='Revisi Diminta' ? 'dikembalikan untuk revisi' : 'ditolak';
-    showToast(`Pengajuan ${s.DisplayID} berhasil ${verb}.`);
-    setTimeout(()=>{ setAdminSubview('dashboard'); }, 1400);
-  } else {
-    showToast(res.error || 'Gagal menyimpan keputusan.');
+  try{
+    const res = await apiPost({ action:'decide', displayId:currentReviewId, newStatus:status, notes, letterUrl, adminPassword, reviewerName:'Admin SRD' });
+    if(res.success){
+      s.Status = status;
+      if(letterUrl) s.LinkSuratBalasan = letterUrl;
+      const verb = status==='Approved' ? 'disetujui' : status==='Revisi Diminta' ? 'dikembalikan untuk revisi' : 'ditolak';
+      showToast(`Pengajuan ${s.DisplayID} berhasil ${verb}.`);
+      setTimeout(()=>{ setAdminSubview('dashboard'); }, 1400);
+    } else {
+      showToast(res.error || 'Gagal menyimpan keputusan.');
+    }
+  } catch(err){
+    showToast(err.message);
   }
 }
 
@@ -1056,17 +1080,21 @@ function populateTopicDropdown(){
 async function renderKategoriAdmin(){
   const box = document.getElementById('category-list');
   box.innerHTML = `<p class="p-4 text-sm" style="color:var(--ink-muted)">Memuat…</p>`;
-  const res = await apiPost({ action:'listCategoriesAdmin', adminPassword });
-  if(!res.success){ box.innerHTML = `<p class="p-4 text-sm" style="color:var(--red)">${res.error}</p>`; return; }
+  try{
+    const res = await apiPost({ action:'listCategoriesAdmin', adminPassword });
+    if(!res.success){ box.innerHTML = `<p class="p-4 text-sm" style="color:var(--red)">${res.error}</p>`; return; }
 
-  box.innerHTML = res.data.map(c=>`
-    <div class="px-5 py-3 flex items-center justify-between gap-3">
-      <span class="text-sm min-w-0 break-words ${c.active ? '' : 'line-through'}" style="color:${c.active ? 'var(--ink)' : 'var(--ink-muted)'}">${c.name}</span>
-      <button onclick="toggleCategoryHandler('${c.name.replace(/'/g,"\\'")}', ${!c.active})"
-        class="text-xs font-medium px-3 py-1.5 rounded-lg border shrink-0 whitespace-nowrap" style="border-color:var(--line); color:${c.active ? 'var(--red)' : 'var(--sage)'}">
-        ${c.active ? 'Nonaktifkan' : 'Aktifkan'}
-      </button>
-    </div>`).join('') || `<p class="p-4 text-sm" style="color:var(--ink-muted)">Belum ada kategori.</p>`;
+    box.innerHTML = res.data.map(c=>`
+      <div class="px-5 py-3 flex items-center justify-between gap-3">
+        <span class="text-sm min-w-0 break-words ${c.active ? '' : 'line-through'}" style="color:${c.active ? 'var(--ink)' : 'var(--ink-muted)'}">${c.name}</span>
+        <button onclick="toggleCategoryHandler('${c.name.replace(/'/g,"\\'")}', ${!c.active})"
+          class="text-xs font-medium px-3 py-1.5 rounded-lg border shrink-0 whitespace-nowrap" style="border-color:var(--line); color:${c.active ? 'var(--red)' : 'var(--sage)'}">
+          ${c.active ? 'Nonaktifkan' : 'Aktifkan'}
+        </button>
+      </div>`).join('') || `<p class="p-4 text-sm" style="color:var(--ink-muted)">Belum ada kategori.</p>`;
+  } catch(err){
+    box.innerHTML = `<p class="p-4 text-sm" style="color:var(--red)">${err.message}</p>`;
+  }
 }
 
 async function addCategoryHandler(){
@@ -1077,27 +1105,37 @@ async function addCategoryHandler(){
   err.classList.add('hidden-view');
   if(!name) return;
   btn.disabled = true; btn.textContent = 'Menambah…';
-  const res = await apiPost({ action:'addCategory', name, adminPassword });
-  btn.disabled = false; btn.textContent = 'Tambah';
-  if(res.success){
-    input.value = '';
-    renderKategoriAdmin();
-    loadCategories(); // sinkronkan dropdown formulir mahasiswa
-    showToast(`Kategori "${name}" ditambahkan.`);
-  } else {
-    err.textContent = res.error || 'Gagal menambah kategori.';
+  try{
+    const res = await apiPost({ action:'addCategory', name, adminPassword });
+    if(res.success){
+      input.value = '';
+      renderKategoriAdmin();
+      loadCategories(); // sinkronkan dropdown formulir mahasiswa
+      showToast(`Kategori "${name}" ditambahkan.`);
+    } else {
+      err.textContent = res.error || 'Gagal menambah kategori.';
+      err.classList.remove('hidden-view');
+    }
+  } catch(networkErr){
+    err.textContent = networkErr.message;
     err.classList.remove('hidden-view');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Tambah';
   }
 }
 
 async function toggleCategoryHandler(name, newActive){
-  const res = await apiPost({ action:'toggleCategory', name, active:newActive, adminPassword });
-  if(res.success){
-    renderKategoriAdmin();
-    loadCategories();
-    showToast(newActive ? `Kategori "${name}" diaktifkan.` : `Kategori "${name}" dinonaktifkan.`);
-  } else {
-    showToast(res.error || 'Gagal mengubah kategori.');
+  try{
+    const res = await apiPost({ action:'toggleCategory', name, active:newActive, adminPassword });
+    if(res.success){
+      renderKategoriAdmin();
+      loadCategories();
+      showToast(newActive ? `Kategori "${name}" diaktifkan.` : `Kategori "${name}" dinonaktifkan.`);
+    } else {
+      showToast(res.error || 'Gagal mengubah kategori.');
+    }
+  } catch(err){
+    showToast(err.message);
   }
 }
 
@@ -1129,22 +1167,27 @@ async function checkOutputEligibility(){
   if(!id) return;
 
   btn.disabled = true; btn.textContent = 'Memeriksa…';
-  const res = await apiGet({ action:'track', id });
-  btn.disabled = false; btn.textContent = 'Verifikasi';
-
-  if(!res.success){
-    ineligible.textContent = res.error || 'Nomor pengajuan tidak ditemukan.';
+  try{
+    const res = await apiGet({ action:'track', id });
+    if(!res.success){
+      ineligible.textContent = res.error || 'Nomor pengajuan tidak ditemukan.';
+      ineligible.classList.remove('hidden-view');
+      return;
+    }
+    if(res.data.status !== 'Approved'){
+      ineligible.textContent = `Status pengajuan ini saat ini "${res.data.status}". Pengiriman output hanya bisa dilakukan setelah status Approved.`;
+      ineligible.classList.remove('hidden-view');
+      return;
+    }
+    currentOutputId = id;
+    document.getElementById('output-title-preview').textContent = res.data.title + ' — ' + res.data.name;
+    formWrap.classList.remove('hidden-view');
+  } catch(err){
+    ineligible.textContent = err.message;
     ineligible.classList.remove('hidden-view');
-    return;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Verifikasi';
   }
-  if(res.data.status !== 'Approved'){
-    ineligible.textContent = `Status pengajuan ini saat ini "${res.data.status}". Pengiriman output hanya bisa dilakukan setelah status Approved.`;
-    ineligible.classList.remove('hidden-view');
-    return;
-  }
-  currentOutputId = id;
-  document.getElementById('output-title-preview').textContent = res.data.title + ' — ' + res.data.name;
-  formWrap.classList.remove('hidden-view');
 }
 
 document.getElementById('output-form').addEventListener('submit', async function(e){
@@ -1204,12 +1247,17 @@ document.getElementById('output-form').addEventListener('submit', async function
 async function tryRestoreAdminSession(){
   const saved = sessionStorage.getItem(ADMIN_SESSION_KEY);
   if(!saved) return;
-  const res = await apiPost({ action:'list', adminPassword: saved });
-  if(res.success){
-    adminPassword = saved;
-    submissions = res.data;
-  } else {
-    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  try{
+    const res = await apiPost({ action:'list', adminPassword: saved });
+    if(res.success){
+      adminPassword = saved;
+      submissions = res.data;
+    } else {
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    }
+  } catch(err){
+    // Diam-diam gagal saja — ini pemulihan sesi otomatis di latar belakang,
+    // pengguna tetap bisa login manual kalau ini tidak berhasil.
   }
 }
 
