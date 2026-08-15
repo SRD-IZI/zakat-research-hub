@@ -143,15 +143,35 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
 <main id="view-student">
   <section class="max-w-7xl mx-auto px-5 sm:px-8 pt-14 pb-10 relative overflow-hidden">
     <div class="hero-aurora"></div>
-    <div class="hero-content max-w-2xl fade-up">
-      <p class="eyebrow mb-3">© Divisi SRD (System, Research &amp; Development)</p>
-      <h1 class="font-display text-[2.35rem] sm:text-[3rem] leading-[1.08] font-semibold tracking-tight" style="color:var(--forest)">
-        Ajukan riset zakat Anda,<br>
-        <span style="background:var(--grad-primary); -webkit-background-clip:text; background-clip:text; color:transparent;">mulai dari sini.</span>
-      </h1>
-      <p class="mt-5 text-[1.05rem] leading-relaxed" style="color:var(--ink-muted)">
-        SRD LAZNAS IZI membuka akses data dan pendampingan bagi mahasiswa yang menulis skripsi, tesis, atau disertasi seputar zakat. Isi formulir di bawah, dan tim kami akan meninjaunya.
-      </p>
+    <div class="hero-content flex flex-col lg:flex-row lg:items-center gap-10">
+      <div class="max-w-2xl fade-up">
+        <p class="eyebrow mb-3">© Divisi SRD (System, Research &amp; Development)</p>
+        <h1 class="font-display text-[2.35rem] sm:text-[3rem] leading-[1.08] font-semibold tracking-tight" style="color:var(--forest)">
+          Ajukan riset zakat Anda,<br>
+          <span style="background:var(--grad-primary); -webkit-background-clip:text; background-clip:text; color:transparent;">mulai dari sini.</span>
+        </h1>
+        <p class="mt-5 text-[1.05rem] leading-relaxed" style="color:var(--ink-muted)">
+          SRD LAZNAS IZI membuka akses data dan pendampingan bagi mahasiswa yang menulis skripsi, tesis, atau disertasi seputar zakat. Isi formulir di bawah, dan tim kami akan meninjaunya.
+        </p>
+      </div>
+
+      <div class="hidden lg:block shrink-0 w-72 card card-accent p-6 fade-up" style="animation-delay:.1s">
+        <p class="text-xs font-semibold mb-4" style="color:var(--ink-muted)">ALUR SINGKAT</p>
+        <div class="space-y-4">
+          <div class="flex items-start gap-3">
+            <div class="stamp done shrink-0" style="width:1.75rem;height:1.75rem;font-size:.6rem">1</div>
+            <div><p class="text-sm font-medium" style="color:var(--forest)">Ajukan proposal</p><p class="text-xs" style="color:var(--ink-muted)">Isi formulir &amp; unggah berkas</p></div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="stamp active shrink-0" style="width:1.75rem;height:1.75rem;font-size:.6rem">2</div>
+            <div><p class="text-sm font-medium" style="color:var(--forest)">Ditinjau SRD</p><p class="text-xs" style="color:var(--ink-muted)">Tim meninjau kelengkapan</p></div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="stamp approved shrink-0" style="width:1.75rem;height:1.75rem;font-size:.6rem">✓</div>
+            <div><p class="text-sm font-medium" style="color:var(--forest)">Keputusan</p><p class="text-xs" style="color:var(--ink-muted)">Rata-rata 2–3 hari kerja</p></div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
