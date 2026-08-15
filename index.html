@@ -71,6 +71,12 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
 .sidebar-link:not(.active){color:#9FB3C9;}
 .sidebar-link:not(.active):hover{background:rgba(255,255,255,.08); color:#fff;}
 .spinner{border:2.5px solid var(--sage-line); border-top-color:var(--sage); border-radius:50%; width:1rem; height:1rem; animation:spin .7s linear infinite;}
+
+.stat-card{transition:transform .2s ease, box-shadow .2s ease; cursor:default;}
+.stat-card:hover{transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,31,63,.1);}
+.stat-icon-badge{width:3rem; height:3rem; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 0 1px rgba(255,255,255,.35), 0 4px 10px rgba(0,31,63,.12); transition:transform .25s ease;}
+.stat-card:hover .stat-icon-badge{transform:scale(1.08) rotate(-4deg);}
+.stat-icon-badge .icon{width:1.3rem; height:1.3rem;}
 @keyframes spin{to{transform:rotate(360deg)}}
 ::-webkit-scrollbar{width:10px;height:10px;}
 ::-webkit-scrollbar-thumb{background:var(--sage-line); border-radius:6px;}
@@ -237,8 +243,8 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
         <h2 class="font-display text-xl font-semibold mb-1" style="color:var(--forest)">Lacak Status Pengajuan</h2>
         <p class="text-sm mb-5" style="color:var(--ink-muted)">Masukkan nomor pengajuan Anda (format REQ-0xx).</p>
         <div class="flex gap-2 mb-6">
-          <input type="text" id="track-input" placeholder="REQ-001" class="font-mono flex-1 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
-          <button onclick="trackSubmission()" id="track-btn" class="btn-gold px-5 sm:px-6 rounded-lg font-medium text-sm shrink-0 whitespace-nowrap">Lacak</button>
+          <input type="text" id="track-input" placeholder="REQ-001" class="font-mono flex-1 min-w-0 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          <button onclick="trackSubmission()" id="track-btn" class="btn-gold px-4 sm:px-6 rounded-lg font-medium text-sm shrink-0 whitespace-nowrap">Lacak</button>
         </div>
         <div id="track-result"></div>
       </div>
@@ -248,8 +254,8 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
         <p class="text-sm mb-6" style="color:var(--ink-muted)">Khusus pengajuan yang sudah berstatus <b>Approved</b>. Masukkan nomor pengajuan Anda untuk membuka formulir.</p>
 
         <div class="flex gap-2 mb-3">
-          <input type="text" id="output-id-input" placeholder="REQ-001" class="font-mono flex-1 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
-          <button onclick="checkOutputEligibility()" id="output-verify-btn" class="btn-gold px-5 sm:px-6 rounded-lg font-medium text-sm shrink-0 whitespace-nowrap">Verifikasi</button>
+          <input type="text" id="output-id-input" placeholder="REQ-001" class="font-mono flex-1 min-w-0 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          <button onclick="checkOutputEligibility()" id="output-verify-btn" class="btn-gold px-3.5 sm:px-6 rounded-lg font-medium text-sm shrink-0 whitespace-nowrap">Verifikasi</button>
         </div>
         <p id="output-ineligible" class="hidden-view text-sm p-3 rounded-lg mb-4" style="background:var(--red-tint); color:var(--red)"></p>
 
@@ -483,8 +489,8 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
       <div class="card p-6 mb-6 max-w-lg">
         <label class="block text-sm font-medium mb-2">Tambah kategori baru</label>
         <div class="flex gap-2">
-          <input id="new-category-input" placeholder="Contoh: Riset Kebencanaan" class="flex-1 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
-          <button onclick="addCategoryHandler()" id="add-category-btn" class="btn-primary px-5 rounded-lg font-medium text-sm">Tambah</button>
+          <input id="new-category-input" placeholder="Contoh: Riset Kebencanaan" class="flex-1 min-w-0 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          <button onclick="addCategoryHandler()" id="add-category-btn" class="btn-primary px-4 sm:px-5 rounded-lg font-medium text-sm shrink-0 whitespace-nowrap">Tambah</button>
         </div>
         <p id="category-error" class="hidden-view text-xs mt-2" style="color:var(--red)"></p>
       </div>
@@ -863,17 +869,24 @@ function renderStatCards(){
     total: submissions.length
   };
   const cards = [
-    {label:'Antrean Baru', value:counts.pending, bg:'var(--gold-tint)', fg:'var(--gold-deep)', icon:'M12 6v6l4 2'},
-    {label:'Sedang Ditinjau', value:counts.review, bg:'var(--sage-light)', fg:'var(--sage)', icon:'M9 12h6M9 16h6M9 8h6M5 4h14v16H5z'},
-    {label:'Disetujui/Selesai', value:counts.approved, bg:'#EFEBDD', fg:'#7A6E4E', icon:'M20 6L9 17l-5-5'},
-    {label:'Total Pengajuan', value:counts.total, bg:'var(--red-tint)', fg:'var(--red)', icon:'M4 20V10m6 10V4m6 16v-7'}
+    {label:'Antrean Baru', value:counts.pending, grad:'linear-gradient(135deg,#F3E7B8,var(--gold))', fg:'#6F5A15',
+     icon:'<path d="M12 7v5l3.5 2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="8.5"/>'},
+    {label:'Sedang Ditinjau', value:counts.review, grad:'linear-gradient(135deg,#BFE3CC,var(--sage-soft))', fg:'#1E5A38',
+     icon:'<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-3.8-3.8" stroke-linecap="round"/>'},
+    {label:'Disetujui / Selesai', value:counts.approved, grad:'linear-gradient(135deg,#8FD1A8,var(--sage))', fg:'#FFFFFF',
+     icon:'<path d="M8 12.5l2.6 2.6L16.5 9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9"/>'},
+    {label:'Total Pengajuan', value:counts.total, grad:'linear-gradient(135deg,var(--forest),var(--forest-deep))', fg:'#FFFFFF',
+     icon:'<path d="M4 19V10m6.5 9V5m6.5 14v-7" stroke-linecap="round" stroke-linejoin="round"/>'}
   ];
-  document.getElementById('admin-stat-cards').innerHTML = cards.map(c=>`
-    <div class="card p-5 flex items-center gap-4">
-      <div class="w-11 h-11 rounded-lg flex items-center justify-center shrink-0" style="background:${c.bg}; color:${c.fg}">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="${c.icon}"/></svg>
+  document.getElementById('admin-stat-cards').innerHTML = cards.map((c,i)=>`
+    <div class="card p-5 flex items-center gap-4 stat-card fade-up" style="animation-delay:${i*.06}s">
+      <div class="stat-icon-badge shrink-0" style="background:${c.grad}; color:${c.fg}">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${c.icon}</svg>
       </div>
-      <div><p class="text-xs font-medium" style="color:var(--ink-muted)">${c.label}</p><p class="font-display text-2xl font-semibold" style="color:var(--forest)">${c.value}</p></div>
+      <div class="min-w-0">
+        <p class="text-xs font-medium leading-snug" style="color:var(--ink-muted)">${c.label}</p>
+        <p class="font-display text-2xl font-semibold" style="color:var(--forest)">${c.value}</p>
+      </div>
     </div>`).join('');
 }
 
@@ -1025,15 +1038,20 @@ function renderStatistik(){
   const statuses = ['Pending','Under Review','Revisi Diminta','Approved','Rejected','Completed'];
   const colors = {'Pending':'#EFEBDD','Under Review':'#DBE64C','Revisi Diminta':'#74C365','Approved':'#00804C','Rejected':'#B3432D','Completed':'#1E488F'};
   const counts = statuses.map(st=>submissions.filter(s=>s.Status===st).length);
-  const total = submissions.length || 1;
+  const total = submissions.length;
+  const safeDenominator = total || 1; // hanya untuk mencegah bagi-nol saat hitung persentase, TIDAK ditampilkan
   const r=70, cx=90, cy=90, circ=2*Math.PI*r;
   let offset=0, arcs='';
   statuses.forEach((st,i)=>{
-    const len = (counts[i]/total)*circ;
+    const len = (counts[i]/safeDenominator)*circ;
     if(len>0) arcs += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${colors[st]}" stroke-width="22" stroke-dasharray="${len} ${circ-len}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
     offset += len;
   });
-  document.getElementById('donut').innerHTML = arcs + `<text x="90" y="85" text-anchor="middle" font-size="26" font-weight="600" fill="var(--forest)" font-family="Fraunces,serif">${total}</text><text x="90" y="104" text-anchor="middle" font-size="11" fill="var(--ink-muted)">pengajuan</text>`;
+  if(total === 0){
+    document.getElementById('donut').innerHTML = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--line)" stroke-width="22"/><text x="90" y="85" text-anchor="middle" font-size="26" font-weight="600" fill="var(--ink-muted)" font-family="Fraunces,serif">0</text><text x="90" y="104" text-anchor="middle" font-size="11" fill="var(--ink-muted)">pengajuan</text>`;
+  } else {
+    document.getElementById('donut').innerHTML = arcs + `<text x="90" y="85" text-anchor="middle" font-size="26" font-weight="600" fill="var(--forest)" font-family="Fraunces,serif">${total}</text><text x="90" y="104" text-anchor="middle" font-size="11" fill="var(--ink-muted)">pengajuan</text>`;
+  }
   document.getElementById('donut-legend').innerHTML = statuses.map((st,i)=>`
     <div class="flex items-center justify-between text-sm">
       <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:${colors[st]}"></span>${st}</span>
