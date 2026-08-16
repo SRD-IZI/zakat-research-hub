@@ -245,7 +245,7 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
         <h2 class="font-display text-xl font-semibold mb-1" style="color:var(--forest)">Lacak Status Pengajuan</h2>
         <p class="text-sm mb-5" style="color:var(--ink-muted)">Masukkan nomor pengajuan Anda (format REQ-0xx).</p>
         <div class="flex gap-2 mb-6">
-          <input type="text" id="track-input" placeholder="REQ-001" class="font-mono flex-1 min-w-0 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          <input type="text" id="track-input" placeholder="REQ-007-A1B2" class="font-mono flex-1 min-w-0 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
           <button onclick="trackSubmission()" id="track-btn" class="btn-gold px-4 sm:px-6 rounded-lg font-medium text-sm shrink-0 whitespace-nowrap">Lacak</button>
         </div>
         <div id="track-result"></div>
@@ -256,7 +256,7 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
         <p class="text-sm mb-6" style="color:var(--ink-muted)">Khusus pengajuan yang sudah berstatus <b>Approved</b>. Masukkan nomor pengajuan Anda untuk membuka formulir.</p>
 
         <div class="flex gap-2 mb-3">
-          <input type="text" id="output-id-input" placeholder="REQ-001" class="font-mono flex-1 min-w-0 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          <input type="text" id="output-id-input" placeholder="REQ-007-A1B2" class="font-mono flex-1 min-w-0 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
           <button onclick="checkOutputEligibility()" id="output-verify-btn" class="btn-gold px-3.5 sm:px-6 rounded-lg font-medium text-sm shrink-0 whitespace-nowrap">Verifikasi</button>
         </div>
         <p id="output-ineligible" class="hidden-view text-sm p-3 rounded-lg mb-4" style="background:var(--red-tint); color:var(--red)"></p>
@@ -311,6 +311,47 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
             <input type="url" id="o-dataset" placeholder="https://…" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
           </div>
           <button type="submit" id="output-submit-btn" class="btn-primary w-full sm:w-auto px-8 py-3 rounded-lg font-medium text-sm">Kirim Output</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Kartu baru: alur revisi & pengajuan ulang (menutup gap: sebelumnya pengajuan
+         berstatus "Revisi Diminta" tidak punya cara untuk direvisi lewat portal). -->
+    <div class="card card-accent p-7 sm:p-8">
+      <h2 class="font-display text-xl font-semibold mb-1" style="color:var(--forest)">Kirim Revisi Proposal</h2>
+      <p class="text-sm mb-6" style="color:var(--ink-muted)">Khusus pengajuan berstatus <b>Revisi Diminta</b>. Masukkan nomor pengajuan Anda untuk membuka formulir revisi.</p>
+
+      <div class="flex gap-2 mb-3">
+        <input type="text" id="revision-id-input" placeholder="REQ-007-A1B2" class="font-mono flex-1 min-w-0 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+        <button onclick="checkRevisionEligibility()" id="revision-verify-btn" class="btn-gold px-3.5 sm:px-6 rounded-lg font-medium text-sm shrink-0 whitespace-nowrap">Verifikasi</button>
+      </div>
+      <p id="revision-ineligible" class="hidden-view text-sm p-3 rounded-lg mb-4" style="background:var(--red-tint); color:var(--red)"></p>
+
+      <div id="revision-form-wrap" class="hidden-view mt-6 pt-6 border-t" style="border-color:var(--line)">
+        <p id="revision-title-preview" class="text-sm font-medium mb-3" style="color:var(--sage)"></p>
+        <div id="revision-catatan-admin" class="hidden-view p-4 rounded-lg mb-5 text-sm leading-relaxed" style="background:var(--gold-tint); color:var(--forest-deep)"></div>
+        <div id="revision-success" class="hidden-view p-5 rounded-xl mb-6" style="background:var(--sage-light); border:1px solid var(--sage-line)">
+          <p class="text-sm font-semibold" style="color:var(--sage)">Revisi berhasil dikirim.</p>
+          <p class="text-sm mt-1" style="color:var(--forest)">Status pengajuan kembali menjadi <b>Under Review</b>. Tim SRD akan meninjau ulang revisi Anda.</p>
+        </div>
+        <div id="revision-error" class="hidden-view p-4 rounded-lg mb-6 text-sm" style="background:var(--red-tint); color:var(--red)"></div>
+
+        <form id="revision-form" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1.5">Draf proposal revisi (PDF) *</label>
+            <div class="dropzone" data-for="rv-proposal">
+              <input type="file" id="rv-proposal" accept="application/pdf" class="hidden">
+              <svg class="icon mx-auto mb-1" style="width:1.4rem;height:1.4rem;color:var(--sage)" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <p class="text-sm" style="color:var(--ink-muted)">Tarik berkas ke sini atau <span class="dropzone-browse">pilih file</span></p>
+              <p class="dropzone-filename"></p>
+            </div>
+            <p class="text-xs mt-1" style="color:var(--ink-muted)">Format PDF, maks. 10 MB. Berkas ini akan menggantikan draf proposal sebelumnya sebagai versi yang ditinjau admin.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5">Catatan tambahan untuk tim SRD (opsional)</label>
+            <textarea id="rv-notes" rows="3" placeholder="Jelaskan singkat perubahan yang Anda lakukan…" class="w-full p-3 border rounded-lg text-sm" style="border-color:var(--line)"></textarea>
+          </div>
+          <button type="submit" id="revision-submit-btn" class="btn-primary w-full sm:w-auto px-8 py-3 rounded-lg font-medium text-sm">Kirim Revisi</button>
         </form>
       </div>
     </div>
@@ -541,6 +582,32 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
   </div>
 </div>
 
+<!-- Pop-up sukses untuk Output & Penyelesaian Riset — konsisten dengan modal pengajuan di atas -->
+<div id="output-success-modal" class="hidden-view fixed inset-0 z-50 flex items-center justify-center px-5" style="background:rgba(0,31,63,.5)">
+  <div class="card p-8 max-w-sm w-full text-center fade-up">
+    <div class="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style="background:var(--grad-primary)">
+      <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h3 class="font-display text-xl font-semibold mb-2" style="color:var(--forest)">Output Riset Berhasil Dikirim!</h3>
+    <p id="output-success-modal-id" class="font-mono text-lg font-semibold mb-4" style="color:var(--sage)"></p>
+    <p class="text-sm mb-6" style="color:var(--ink-muted)">Status pengajuan otomatis menjadi <b>Completed</b>. Terima kasih atas kontribusi riset Anda untuk LAZNAS IZI.</p>
+    <button onclick="closeOutputSuccessModal()" class="btn-primary w-full py-2.5 rounded-lg font-medium text-sm">Tutup</button>
+  </div>
+</div>
+
+<!-- Pop-up sukses untuk pengiriman revisi — konsisten dengan dua modal di atas -->
+<div id="revision-success-modal" class="hidden-view fixed inset-0 z-50 flex items-center justify-center px-5" style="background:rgba(0,31,63,.5)">
+  <div class="card p-8 max-w-sm w-full text-center fade-up">
+    <div class="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style="background:var(--grad-primary)">
+      <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h3 class="font-display text-xl font-semibold mb-2" style="color:var(--forest)">Revisi Berhasil Dikirim!</h3>
+    <p id="revision-success-modal-id" class="font-mono text-lg font-semibold mb-4" style="color:var(--sage)"></p>
+    <p class="text-sm mb-6" style="color:var(--ink-muted)">Status pengajuan kembali menjadi <b>Under Review</b>. Tim SRD akan meninjau ulang revisi Anda.</p>
+    <button onclick="closeRevisionSuccessModal()" class="btn-primary w-full py-2.5 rounded-lg font-medium text-sm">Tutup</button>
+  </div>
+</div>
+
 <div id="toast" class="hidden-view fixed top-4 right-4 left-4 sm:left-auto sm:top-6 sm:right-6 bg-[var(--forest-deep)] text-white px-5 py-4 rounded-xl shadow-xl flex items-center gap-3 z-50 sm:max-w-sm">
   <div class="rounded-full p-1 w-6 h-6 flex items-center justify-center shrink-0" style="background:var(--gold)">
     <svg class="w-3.5 h-3.5" style="color:var(--forest-deep)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -568,11 +635,24 @@ let currentReviewId = null;
 let adminSubview = 'dashboard';
 let categories = [];
 let currentOutputId = null;
+let currentRevisionId = null;
 let confirmCallback = null;
 let queueSortDir = 'desc'; // terbaru dulu
 let adminSessionRestorePromise = null;
 const ADMIN_SESSION_KEY = 'zrh_admin_pw';
+const ADMIN_SESSION_TS_KEY = 'zrh_admin_pw_ts';
+const ADMIN_SESSION_MAX_AGE_MS = 8 * 60 * 60 * 1000; // 8 jam
 const MAX_FILE_MB = 10;
+
+// ---------- KEAMANAN: cegah stored XSS ----------
+// Judul riset, nama, institusi, dll berasal dari FORM PUBLIK tanpa login —
+// siapa pun bisa mengisinya. Semua nilai seperti ini WAJIB di-escape sebelum
+// dimasukkan ke innerHTML, supaya tidak ada yang bisa menyisipkan <script>/
+// onerror= dsb yang bisa mencuri sesi admin saat admin membuka dashboard.
+function escapeHtml(str){
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
 
 // ---------- DROPZONE UNGGAH BERKAS ----------
 function initDropzone(zone){
@@ -646,9 +726,9 @@ async function setRole(role){
   document.getElementById('tab-student').classList.toggle('active', role==='student');
   document.getElementById('tab-admin').classList.toggle('active', role==='admin');
   if(role==='admin'){
-    // Kalau pemulihan sesi dari sessionStorage masih berjalan (baru saja refresh),
-    // tunggu dulu selesai sebelum memutuskan tampil layar login atau tidak —
-    // ini mencegah "diminta login ulang" padahal sesinya sebenarnya masih valid.
+    // Kalau pemulihan sesi dari localStorage masih berjalan (baru saja refresh/
+    // baru buka tab), tunggu dulu selesai sebelum memutuskan tampil layar login
+    // atau tidak — ini mencegah "diminta login ulang" padahal sesinya masih valid.
     if(!adminPassword && adminSessionRestorePromise){
       await adminSessionRestorePromise;
     }
@@ -668,7 +748,8 @@ async function attemptAdminLogin(){
     if(res.success){
       adminPassword = pw;
       submissions = res.data;
-      sessionStorage.setItem(ADMIN_SESSION_KEY, pw);
+      localStorage.setItem(ADMIN_SESSION_KEY, pw);
+      localStorage.setItem(ADMIN_SESSION_TS_KEY, String(Date.now()));
       document.getElementById('admin-login').classList.add('hidden-view');
       document.getElementById('admin-authenticated').classList.remove('hidden-view');
       setAdminSubview('dashboard');
@@ -687,7 +768,8 @@ async function attemptAdminLogin(){
 function adminLogout(){
   adminPassword = null;
   submissions = [];
-  sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  localStorage.removeItem(ADMIN_SESSION_KEY);
+  localStorage.removeItem(ADMIN_SESSION_TS_KEY);
   document.getElementById('admin-password-input').value = '';
   setRole('admin');
 }
@@ -893,11 +975,12 @@ async function trackSubmission(){
     const s = res.data;
     box.innerHTML = `
       <div class="p-4 rounded-lg mb-4" style="background:var(--sage-light)">
-        <p class="font-mono text-sm font-semibold" style="color:var(--sage)">${s.displayId}</p>
-        <p class="font-medium text-sm mt-1">${s.title}</p>
-        <p class="text-xs mt-0.5" style="color:var(--ink-muted)">${s.name} · ${s.institution}</p>
+        <p class="font-mono text-sm font-semibold" style="color:var(--sage)">${escapeHtml(s.displayId)}</p>
+        <p class="font-medium text-sm mt-1">${escapeHtml(s.title)}</p>
+        <p class="text-xs mt-0.5" style="color:var(--ink-muted)">${escapeHtml(s.name)} · ${escapeHtml(s.institution)}</p>
       </div>
       ${timelineHTML(s.status)}
+      ${s.status === 'Revisi Diminta' ? `<div class="mt-4 p-3 rounded-lg text-sm" style="background:var(--gold-tint); color:var(--forest-deep)">Status pengajuan Anda <b>"Revisi Diminta"</b> — silakan lengkapi revisi lewat kartu <b>"Kirim Revisi Proposal"</b> di bawah.</div>` : ''}
       ${s.letterUrl ? `<a href="${s.letterUrl}" target="_blank" class="block text-center mt-4 py-2.5 rounded-lg text-sm font-medium btn-gold">Unduh Surat Balasan</a>` : ''}
     `;
   } catch(err){
@@ -959,9 +1042,9 @@ function renderQueueTable(){
   document.getElementById('queue-count').textContent = `${filtered.length} pengajuan`;
   document.getElementById('queue-body').innerHTML = filtered.map(s=>`
     <tr class="hover:bg-[var(--sage-light)] transition">
-      <td class="px-6 py-4 font-mono text-sm font-medium" style="color:var(--sage)">${s.DisplayID}</td>
-      <td class="px-6 py-4"><div class="font-medium text-sm">${s.NamaPeneliti}</div><div class="text-xs mt-0.5" style="color:var(--ink-muted)">${s.Institusi} · ${s.JenjangPenelitian}</div></td>
-      <td class="px-6 py-4 text-sm max-w-xs truncate" style="color:var(--ink-muted)" title="${s.JudulRiset}">${s.JudulRiset}</td>
+      <td class="px-6 py-4 font-mono text-sm font-medium" style="color:var(--sage)">${escapeHtml(s.DisplayID)}</td>
+      <td class="px-6 py-4"><div class="font-medium text-sm">${escapeHtml(s.NamaPeneliti)}</div><div class="text-xs mt-0.5" style="color:var(--ink-muted)">${escapeHtml(s.Institusi)} · ${escapeHtml(s.JenjangPenelitian)}</div></td>
+      <td class="px-6 py-4 text-sm max-w-xs truncate" style="color:var(--ink-muted)" title="${escapeHtml(s.JudulRiset)}">${escapeHtml(s.JudulRiset)}</td>
       <td class="px-6 py-4 text-sm" style="color:var(--ink-muted)">${fmtDate(s.Timestamp)}</td>
       <td class="px-6 py-4"><span class="badge ${badgeClass(s.Status)}">${s.Status}</span></td>
       <td class="px-6 py-4 text-right">
@@ -1039,6 +1122,16 @@ function renderReview(s){
 }
 
 async function decide(status){
+  // Catatan wajib diisi untuk Revisi/Tolak — surat balasan resmi otomatis
+  // merujuk ke catatan ini, dan server akan menolak permintaan tanpa catatan.
+  if(status === 'Revisi Diminta' || status === 'Rejected'){
+    const notes = document.getElementById('review-note').value.trim();
+    if(!notes){
+      showToast('Catatan/alasan wajib diisi untuk keputusan Revisi atau Tolak — akan dicantumkan pada surat balasan resmi.');
+      document.getElementById('review-note').focus();
+      return;
+    }
+  }
   if(status === 'Rejected'){
     showConfirm('Yakin ingin menolak pengajuan ini? Email penolakan akan langsung terkirim ke mahasiswa dan tindakan ini tidak dapat dibatalkan.', () => performDecide(status));
     return;
@@ -1077,9 +1170,9 @@ function renderRepositori(){
   const approved = submissions.filter(s=>['Approved','Completed'].includes(s.Status));
   document.getElementById('repo-grid').innerHTML = approved.map(s=>`
     <div class="card p-6 flex flex-col">
-      <p class="eyebrow mb-2">${s.JenjangPenelitian} · ${fmtDate(s.Timestamp)}</p>
-      <p class="font-display font-semibold leading-snug mb-3" style="color:var(--forest)">${s.JudulRiset}</p>
-      <p class="text-sm mt-auto pt-3 border-t" style="border-color:var(--line); color:var(--ink-muted)">${s.NamaPeneliti}<br>${s.Institusi}</p>
+      <p class="eyebrow mb-2">${escapeHtml(s.JenjangPenelitian)} · ${fmtDate(s.Timestamp)}</p>
+      <p class="font-display font-semibold leading-snug mb-3" style="color:var(--forest)">${escapeHtml(s.JudulRiset)}</p>
+      <p class="text-sm mt-auto pt-3 border-t" style="border-color:var(--line); color:var(--ink-muted)">${escapeHtml(s.NamaPeneliti)}<br>${escapeHtml(s.Institusi)}</p>
     </div>`).join('') || `<p class="text-sm col-span-3" style="color:var(--ink-muted)">Belum ada riset yang disetujui.</p>`;
 }
 
@@ -1113,7 +1206,7 @@ function renderStatistik(){
   const maxCount = Math.max(1, ...Object.values(univs));
   document.getElementById('univ-bars').innerHTML = Object.entries(univs).sort((a,b)=>b[1]-a[1]).map(([u,c])=>`
     <div>
-      <div class="flex justify-between text-sm mb-1"><span>${u}</span><span class="font-mono" style="color:var(--ink-muted)">${c}</span></div>
+      <div class="flex justify-between text-sm mb-1"><span>${escapeHtml(u)}</span><span class="font-mono" style="color:var(--ink-muted)">${c}</span></div>
       <div class="h-2 rounded-full" style="background:var(--sage-light)"><div class="h-2 rounded-full" style="background:var(--sage); width:${(c/maxCount)*100}%"></div></div>
     </div>`).join('') || `<p class="text-sm" style="color:var(--ink-muted)">Belum ada data.</p>`;
 }
@@ -1149,7 +1242,7 @@ async function renderKategoriAdmin(){
 
     box.innerHTML = res.data.map(c=>`
       <div class="px-5 py-3 flex items-center justify-between gap-3">
-        <span class="text-sm min-w-0 break-words ${c.active ? '' : 'line-through'}" style="color:${c.active ? 'var(--ink)' : 'var(--ink-muted)'}">${c.name}</span>
+        <span class="text-sm min-w-0 break-words ${c.active ? '' : 'line-through'}" style="color:${c.active ? 'var(--ink)' : 'var(--ink-muted)'}">${escapeHtml(c.name)}</span>
         <button onclick="toggleCategoryHandler('${c.name.replace(/'/g,"\\'")}', ${!c.active})"
           class="text-xs font-medium px-3 py-1.5 rounded-lg border shrink-0 whitespace-nowrap" style="border-color:var(--line); color:${c.active ? 'var(--red)' : 'var(--sage)'}">
           ${c.active ? 'Nonaktifkan' : 'Aktifkan'}
@@ -1216,6 +1309,12 @@ function closeConfirm(){
 function closeSuccessModal(){
   document.getElementById('success-modal').classList.add('hidden-view');
 }
+function closeOutputSuccessModal(){
+  document.getElementById('output-success-modal').classList.add('hidden-view');
+}
+function closeRevisionSuccessModal(){
+  document.getElementById('revision-success-modal').classList.add('hidden-view');
+}
 document.getElementById('confirm-ok-btn').addEventListener('click', () => {
   const cb = confirmCallback;
   closeConfirm();
@@ -1274,6 +1373,24 @@ document.getElementById('output-form').addEventListener('submit', async function
       return;
     }
 
+    // Batas kata ditegakkan server, tapi dicek dulu di sini supaya pesannya
+    // langsung jelas tanpa perlu menunggu round-trip ke server.
+    const hitungKata = (txt) => txt.trim() ? txt.trim().split(/\s+/).length : 0;
+    const kataRingkasan = hitungKata(document.getElementById('o-summary').value);
+    const kataRekomendasi = hitungKata(document.getElementById('o-recommendations').value);
+    if(kataRingkasan > 300){
+      document.getElementById('output-error').textContent = `Ringkasan Eksekutif melebihi batas 300 kata (saat ini ${kataRingkasan} kata). Harap dipersingkat.`;
+      document.getElementById('output-error').classList.remove('hidden-view');
+      btn.disabled = false; btn.textContent = 'Kirim Output';
+      return;
+    }
+    if(kataRekomendasi > 150){
+      document.getElementById('output-error').textContent = `Rekomendasi Praktis melebihi batas 150 kata (saat ini ${kataRekomendasi} kata). Harap dipersingkat.`;
+      document.getElementById('output-error').classList.remove('hidden-view');
+      btn.disabled = false; btn.textContent = 'Kirim Output';
+      return;
+    }
+
     let infografisB64, naskahB64;
     try{
       infografisB64 = await readFileValidated(infografisFile, 'Infografis');
@@ -1296,6 +1413,8 @@ document.getElementById('output-form').addEventListener('submit', async function
 
     if(res.success){
       document.getElementById('output-success').classList.remove('hidden-view');
+      document.getElementById('output-success-modal-id').textContent = currentOutputId;
+      document.getElementById('output-success-modal').classList.remove('hidden-view');
       this.reset();
       this.classList.add('hidden-view');
     } else {
@@ -1310,27 +1429,137 @@ document.getElementById('output-form').addEventListener('submit', async function
   }
 });
 
-// ---------- SESI ADMIN (bertahan lewat sessionStorage — hilang saat tab ditutup) ----------
+// ---------- STUDENT: REVISI & PENGAJUAN ULANG ----------
+async function checkRevisionEligibility(){
+  const id = document.getElementById('revision-id-input').value.trim().toUpperCase();
+  const btn = document.getElementById('revision-verify-btn');
+  const ineligible = document.getElementById('revision-ineligible');
+  const formWrap = document.getElementById('revision-form-wrap');
+  ineligible.classList.add('hidden-view');
+  formWrap.classList.add('hidden-view');
+  document.getElementById('revision-success').classList.add('hidden-view');
+  if(!id) return;
+
+  btn.disabled = true; btn.textContent = 'Memeriksa…';
+  try{
+    const res = await apiGet({ action:'track', id });
+    if(!res.success){
+      ineligible.textContent = res.error || 'Nomor pengajuan tidak ditemukan.';
+      ineligible.classList.remove('hidden-view');
+      return;
+    }
+    if(res.data.status !== 'Revisi Diminta'){
+      ineligible.textContent = `Status pengajuan ini saat ini "${res.data.status}". Pengiriman revisi hanya bisa dilakukan saat status "Revisi Diminta".`;
+      ineligible.classList.remove('hidden-view');
+      return;
+    }
+    currentRevisionId = id;
+    document.getElementById('revision-title-preview').textContent = res.data.title + ' — ' + res.data.name;
+
+    const catatanBox = document.getElementById('revision-catatan-admin');
+    if(res.data.catatanRevisi){
+      catatanBox.innerHTML = '<strong>Catatan revisi dari Divisi SRD:</strong><br>' + escapeHtml(res.data.catatanRevisi).replace(/\n/g,'<br>');
+      catatanBox.classList.remove('hidden-view');
+    } else {
+      catatanBox.classList.add('hidden-view');
+    }
+    formWrap.classList.remove('hidden-view');
+  } catch(err){
+    ineligible.textContent = err.message;
+    ineligible.classList.remove('hidden-view');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Verifikasi';
+  }
+}
+
+document.getElementById('revision-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const btn = document.getElementById('revision-submit-btn');
+  document.getElementById('revision-error').classList.add('hidden-view');
+  btn.disabled = true; btn.textContent = 'Mengirim…';
+
+  try{
+    const proposalFile = document.getElementById('rv-proposal').files[0];
+    if(!proposalFile){
+      document.getElementById('revision-error').textContent = 'Draf proposal revisi wajib diunggah.';
+      document.getElementById('revision-error').classList.remove('hidden-view');
+      btn.disabled = false; btn.textContent = 'Kirim Revisi';
+      return;
+    }
+
+    let proposalB64;
+    try{
+      proposalB64 = await readFileValidated(proposalFile, 'Draf Proposal Revisi');
+    } catch(sizeErr){
+      document.getElementById('revision-error').textContent = sizeErr.message;
+      document.getElementById('revision-error').classList.remove('hidden-view');
+      btn.disabled = false; btn.textContent = 'Kirim Revisi';
+      return;
+    }
+
+    const res = await apiPost({
+      action:'resubmit',
+      displayId: currentRevisionId,
+      proposalBase64: proposalB64,
+      proposalName: proposalFile.name,
+      catatanRevisi: document.getElementById('rv-notes').value.trim()
+    });
+
+    if(res.success){
+      document.getElementById('revision-success').classList.remove('hidden-view');
+      document.getElementById('revision-success-modal-id').textContent = currentRevisionId;
+      document.getElementById('revision-success-modal').classList.remove('hidden-view');
+      this.reset();
+      this.classList.add('hidden-view');
+    } else {
+      document.getElementById('revision-error').textContent = res.error || 'Gagal mengirim revisi.';
+      document.getElementById('revision-error').classList.remove('hidden-view');
+    }
+  } catch(err){
+    document.getElementById('revision-error').textContent = 'Terjadi kesalahan jaringan: ' + err;
+    document.getElementById('revision-error').classList.remove('hidden-view');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Kirim Revisi';
+  }
+});
+
+// ---------- SESI ADMIN (bertahan lewat localStorage selama 8 jam — TIDAK ----------
+// ---------- hilang saat refresh atau saat dibuka di tab baru, hanya lewat ----------
+// ---------- logout eksplisit atau setelah 8 jam) ----------
 async function tryRestoreAdminSession(){
-  const saved = sessionStorage.getItem(ADMIN_SESSION_KEY);
+  const saved = localStorage.getItem(ADMIN_SESSION_KEY);
+  const savedTs = parseInt(localStorage.getItem(ADMIN_SESSION_TS_KEY) || '0', 10);
   if(!saved) return;
+
+  // Sesi kedaluwarsa setelah 8 jam sejak login terakhir — demi keamanan,
+  // bukan supaya sering-sering minta login ulang.
+  if(!savedTs || (Date.now() - savedTs) > ADMIN_SESSION_MAX_AGE_MS){
+    localStorage.removeItem(ADMIN_SESSION_KEY);
+    localStorage.removeItem(ADMIN_SESSION_TS_KEY);
+    return;
+  }
+
   try{
     const res = await apiPost({ action:'list', adminPassword: saved });
     if(res.success){
       adminPassword = saved;
       submissions = res.data;
+      localStorage.setItem(ADMIN_SESSION_TS_KEY, String(Date.now())); // perpanjang masa berlaku
     } else {
-      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      localStorage.removeItem(ADMIN_SESSION_KEY);
+      localStorage.removeItem(ADMIN_SESSION_TS_KEY);
     }
   } catch(err){
     // Diam-diam gagal saja — ini pemulihan sesi otomatis di latar belakang,
-    // pengguna tetap bisa login manual kalau ini tidak berhasil.
+    // pengguna tetap bisa login manual kalau ini tidak berhasil. Sesi TIDAK
+    // dihapus di sini supaya gangguan jaringan sesaat tidak memaksa logout.
   }
 }
 
 // ---------- INIT ----------
 document.getElementById('track-input').addEventListener('keydown', e => { if(e.key === 'Enter') trackSubmission(); });
 document.getElementById('output-id-input').addEventListener('keydown', e => { if(e.key === 'Enter') checkOutputEligibility(); });
+document.getElementById('revision-id-input').addEventListener('keydown', e => { if(e.key === 'Enter') checkRevisionEligibility(); });
 document.getElementById('admin-password-input').addEventListener('keydown', e => { if(e.key === 'Enter') attemptAdminLogin(); });
 loadCategories();
 adminSessionRestorePromise = tryRestoreAdminSession();
