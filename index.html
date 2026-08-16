@@ -211,6 +211,7 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
             <p class="text-sm" style="color:var(--ink-muted)">Tarik berkas ke sini atau <span class="dropzone-browse">pilih file</span></p>
             <p class="dropzone-filename"></p>
           </div>
+          <p class="text-xs mt-1" style="color:var(--ink-muted)">Format PDF, maks. 10 MB.</p>
         </div>
         <div>
           <label class="block text-sm font-medium mb-1.5">Draf proposal riset (PDF) *</label>
@@ -220,6 +221,7 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
             <p class="text-sm" style="color:var(--ink-muted)">Tarik berkas ke sini atau <span class="dropzone-browse">pilih file</span></p>
             <p class="dropzone-filename"></p>
           </div>
+          <p class="text-xs mt-1" style="color:var(--ink-muted)">Format PDF, maks. 10 MB.</p>
         </div>
         <div>
           <label class="block text-sm font-medium mb-1.5">Instrumen penelitian — kuesioner/pedoman wawancara (opsional)</label>
@@ -229,7 +231,7 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
             <p class="text-sm" style="color:var(--ink-muted)">Tarik berkas ke sini atau <span class="dropzone-browse">pilih file</span></p>
             <p class="dropzone-filename"></p>
           </div>
-          <p class="text-xs mt-1" style="color:var(--ink-muted)">Lampirkan jika riset Anda memakai kuesioner atau pedoman wawancara terstruktur.</p>
+          <p class="text-xs mt-1" style="color:var(--ink-muted)">Format PDF, maks. 10 MB. Lampirkan jika riset Anda memakai kuesioner atau pedoman wawancara terstruktur.</p>
         </div>
 
         <button type="submit" id="submit-btn" class="btn-primary w-full py-3 rounded-lg font-medium text-sm mt-2 flex items-center justify-center gap-2">
@@ -269,12 +271,20 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
 
           <form id="output-form" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium mb-1.5">Ringkasan eksekutif *</label>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="block text-sm font-medium">Ringkasan eksekutif *</label>
+                <span id="o-summary-count" class="text-xs" style="color:var(--ink-muted)">0 / 300 kata</span>
+              </div>
               <textarea required id="o-summary" rows="4" placeholder="Ringkasan temuan utama riset…" class="w-full p-3 border rounded-lg text-sm" style="border-color:var(--line)"></textarea>
+              <p class="text-xs mt-1" style="color:var(--ink-muted)">Disarankan maksimal 300 kata — cukup untuk memuat inti temuan tanpa bertele-tele.</p>
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1.5">Rekomendasi praktis untuk LAZNAS IZI *</label>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="block text-sm font-medium">Rekomendasi praktis untuk LAZNAS IZI *</label>
+                <span id="o-recommendations-count" class="text-xs" style="color:var(--ink-muted)">0 / 150 kata</span>
+              </div>
               <textarea required id="o-recommendations" rows="4" placeholder="Apa yang sebaiknya dilakukan lembaga berdasarkan temuan Anda?" class="w-full p-3 border rounded-lg text-sm" style="border-color:var(--line)"></textarea>
+              <p class="text-xs mt-1" style="color:var(--ink-muted)">Disarankan maksimal 150 kata — fokus pada tindakan konkret yang bisa langsung ditindaklanjuti.</p>
             </div>
             <div>
               <label class="block text-sm font-medium mb-1.5">Infografis / slide presentasi (PDF)</label>
@@ -284,6 +294,7 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
                 <p class="text-sm" style="color:var(--ink-muted)">Tarik berkas ke sini atau <span class="dropzone-browse">pilih file</span></p>
                 <p class="dropzone-filename"></p>
               </div>
+              <p class="text-xs mt-1" style="color:var(--ink-muted)">Format PDF, maks. 10 MB.</p>
             </div>
             <div>
               <label class="block text-sm font-medium mb-1.5">Naskah akademik final (PDF) *</label>
@@ -293,6 +304,7 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
                 <p class="text-sm" style="color:var(--ink-muted)">Tarik berkas ke sini atau <span class="dropzone-browse">pilih file</span></p>
                 <p class="dropzone-filename"></p>
               </div>
+              <p class="text-xs mt-1" style="color:var(--ink-muted)">Format PDF, maks. 10 MB.</p>
             </div>
           <div>
             <label class="block text-sm font-medium mb-1.5">Link dataset lapangan (opsional)</label>
@@ -449,8 +461,10 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
           <div id="decision-form">
             <label class="block text-sm font-medium mb-2">Catatan internal / pesan revisi</label>
             <textarea id="review-note" rows="4" placeholder="Alasan penolakan atau poin revisi…" class="w-full p-3 border rounded-lg text-sm mb-4" style="border-color:var(--line)"></textarea>
-            <label class="block text-sm font-medium mb-2">Link surat balasan (opsional, Google Docs)</label>
-            <input id="review-letter" placeholder="https://docs.google.com/…" class="w-full p-3 border rounded-lg text-sm mb-6" style="border-color:var(--line)">
+            <div class="p-3 rounded-lg mb-6 text-xs flex gap-2" style="background:var(--sage-light); color:var(--sage)">
+              <svg class="icon shrink-0 mt-0.5" style="width:.9rem;height:.9rem" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5M12 8h.01" stroke-linecap="round"/></svg>
+              <span>Surat balasan resmi dibuat <b>otomatis</b> begitu Anda memutuskan — tidak perlu ditempel manual. Catatan di atas akan ikut dicantumkan dalam suratnya.</span>
+            </div>
             <div class="space-y-2.5">
               <button onclick="decide('Approved')" class="btn-primary w-full py-3 rounded-lg font-medium text-sm">Setujui Proposal</button>
               <button onclick="decide('Revisi Diminta')" class="btn-outline-amber w-full py-3 rounded-lg font-medium text-sm">Kembalikan untuk Revisi</button>
@@ -514,6 +528,19 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
   </div>
 </div>
 
+<div id="success-modal" class="hidden-view fixed inset-0 z-50 flex items-center justify-center px-5" style="background:rgba(0,31,63,.5)">
+  <div class="card p-8 max-w-sm w-full text-center fade-up">
+    <div class="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style="background:var(--grad-primary)">
+      <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h3 class="font-display text-xl font-semibold mb-2" style="color:var(--forest)">Pengajuan Berhasil Dikirim!</h3>
+    <p class="text-sm mb-1" style="color:var(--ink-muted)">Nomor pengajuan Anda:</p>
+    <p id="success-modal-id" class="font-mono text-2xl font-semibold mb-4" style="color:var(--sage)"></p>
+    <p class="text-sm mb-6" style="color:var(--ink-muted)">Simpan nomor ini untuk melacak status pengajuan Anda. Konfirmasi juga telah dikirim ke email Anda.</p>
+    <button onclick="closeSuccessModal()" class="btn-primary w-full py-2.5 rounded-lg font-medium text-sm">Tutup</button>
+  </div>
+</div>
+
 <div id="toast" class="hidden-view fixed top-4 right-4 left-4 sm:left-auto sm:top-6 sm:right-6 bg-[var(--forest-deep)] text-white px-5 py-4 rounded-xl shadow-xl flex items-center gap-3 z-50 sm:max-w-sm">
   <div class="rounded-full p-1 w-6 h-6 flex items-center justify-center shrink-0" style="background:var(--gold)">
     <svg class="w-3.5 h-3.5" style="color:var(--forest-deep)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -543,6 +570,7 @@ let categories = [];
 let currentOutputId = null;
 let confirmCallback = null;
 let queueSortDir = 'desc'; // terbaru dulu
+let adminSessionRestorePromise = null;
 const ADMIN_SESSION_KEY = 'zrh_admin_pw';
 const MAX_FILE_MB = 10;
 
@@ -563,6 +591,19 @@ function initDropzone(zone){
   });
 }
 document.querySelectorAll('.dropzone').forEach(initDropzone);
+
+// ---------- PENGHITUNG KATA (Ringkasan Eksekutif & Rekomendasi Praktis) ----------
+function wireWordCounter(textareaId, counterId, maxWords){
+  const ta = document.getElementById(textareaId);
+  const counter = document.getElementById(counterId);
+  ta.addEventListener('input', () => {
+    const words = ta.value.trim() ? ta.value.trim().split(/\s+/).length : 0;
+    counter.textContent = `${words} / ${maxWords} kata`;
+    counter.style.color = words > maxWords ? 'var(--red)' : 'var(--ink-muted)';
+  });
+}
+wireWordCounter('o-summary', 'o-summary-count', 300);
+wireWordCounter('o-recommendations', 'o-recommendations-count', 150);
 
 // ---------- SIDEBAR MOBILE ----------
 function toggleSidebar(open){
@@ -599,12 +640,18 @@ async function apiPost(payload){
 }
 
 // ---------- ROLE / VIEW SWITCH ----------
-function setRole(role){
+async function setRole(role){
   document.getElementById('view-student').classList.toggle('hidden-view', role!=='student');
   document.getElementById('view-admin').classList.toggle('hidden-view', role!=='admin');
   document.getElementById('tab-student').classList.toggle('active', role==='student');
   document.getElementById('tab-admin').classList.toggle('active', role==='admin');
   if(role==='admin'){
+    // Kalau pemulihan sesi dari sessionStorage masih berjalan (baru saja refresh),
+    // tunggu dulu selesai sebelum memutuskan tampil layar login atau tidak —
+    // ini mencegah "diminta login ulang" padahal sesinya sebenarnya masih valid.
+    if(!adminPassword && adminSessionRestorePromise){
+      await adminSessionRestorePromise;
+    }
     if(adminPassword){ document.getElementById('admin-login').classList.add('hidden-view'); document.getElementById('admin-authenticated').classList.remove('hidden-view'); setAdminSubview('dashboard'); }
     else { document.getElementById('admin-login').classList.remove('hidden-view'); document.getElementById('admin-authenticated').classList.add('hidden-view'); }
   }
@@ -812,6 +859,8 @@ document.getElementById('submission-form').addEventListener('submit', async func
     if(res.success){
       document.getElementById('success-id').textContent = res.displayId;
       document.getElementById('submission-success').classList.remove('hidden-view');
+      document.getElementById('success-modal-id').textContent = res.displayId;
+      document.getElementById('success-modal').classList.remove('hidden-view');
       this.reset();
       document.getElementById('track-input').value = res.displayId;
       trackSubmission();
@@ -982,9 +1031,11 @@ function renderReview(s){
   document.getElementById('decision-form').classList.toggle('hidden-view', locked);
   const lockedBox = document.getElementById('decision-locked');
   lockedBox.classList.toggle('hidden-view', !locked);
-  if(locked) lockedBox.innerHTML = `Keputusan tercatat: <b>${s.Status}</b>. Detail lengkap ada di tab LogAdmin.`;
+  if(locked){
+    lockedBox.innerHTML = `Keputusan tercatat: <b>${s.Status}</b>.` +
+      (s.LinkSuratBalasan ? ` <a href="${s.LinkSuratBalasan}" target="_blank" class="underline font-medium">Lihat surat balasan</a>` : ' Surat balasan sedang/telah dibuat otomatis.');
+  }
   document.getElementById('review-note').value = '';
-  document.getElementById('review-letter').value = '';
 }
 
 async function decide(status){
@@ -998,15 +1049,14 @@ async function decide(status){
 async function performDecide(status){
   const s = submissions.find(x=>x.DisplayID===currentReviewId);
   const notes = document.getElementById('review-note').value.trim();
-  const letterUrl = document.getElementById('review-letter').value.trim();
   try{
-    const res = await apiPost({ action:'decide', displayId:currentReviewId, newStatus:status, notes, letterUrl, adminPassword, reviewerName:'Admin SRD' });
+    const res = await apiPost({ action:'decide', displayId:currentReviewId, newStatus:status, notes, adminPassword, reviewerName:'Admin SRD' });
     if(res.success){
       s.Status = status;
-      if(letterUrl) s.LinkSuratBalasan = letterUrl;
+      if(res.letterUrl) s.LinkSuratBalasan = res.letterUrl;
       const verb = status==='Approved' ? 'disetujui' : status==='Revisi Diminta' ? 'dikembalikan untuk revisi' : 'ditolak';
-      showToast(`Pengajuan ${s.DisplayID} berhasil ${verb}.`);
-      setTimeout(()=>{ setAdminSubview('dashboard'); }, 1400);
+      showToast(`Pengajuan ${s.DisplayID} berhasil ${verb}. Surat balasan & email terkirim otomatis.`);
+      setTimeout(()=>{ setAdminSubview('dashboard'); }, 1600);
     } else {
       showToast(res.error || 'Gagal menyimpan keputusan.');
     }
@@ -1162,6 +1212,10 @@ function closeConfirm(){
   document.getElementById('confirm-modal').classList.add('hidden-view');
   confirmCallback = null;
 }
+
+function closeSuccessModal(){
+  document.getElementById('success-modal').classList.add('hidden-view');
+}
 document.getElementById('confirm-ok-btn').addEventListener('click', () => {
   const cb = confirmCallback;
   closeConfirm();
@@ -1279,7 +1333,7 @@ document.getElementById('track-input').addEventListener('keydown', e => { if(e.k
 document.getElementById('output-id-input').addEventListener('keydown', e => { if(e.key === 'Enter') checkOutputEligibility(); });
 document.getElementById('admin-password-input').addEventListener('keydown', e => { if(e.key === 'Enter') attemptAdminLogin(); });
 loadCategories();
-tryRestoreAdminSession();
+adminSessionRestorePromise = tryRestoreAdminSession();
 </script>
 </body>
 </html>
