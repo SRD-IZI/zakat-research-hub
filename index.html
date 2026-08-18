@@ -9,11 +9,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root{
-  --forest:#1E488F; --forest-deep:#001F3F;
-  --sage:#00804C; --sage-light:#E2F3EA; --sage-line:#C7E4D5; --sage-soft:#74C365;
-  --gold:#DBE64C; --gold-deep:#6F7A16; --gold-tint:#FAFBE0; --gold-soft:#74C365;
-  --paper:#F6F7ED; --card:#FFFFFF; --ink:#17232D; --ink-muted:#5B6B78;
-  --line:#E4E1D2; --red:#B3432D; --red-tint:#F7E9E4; --red-line:#E7C9BE;
+  --forest:#0B3B24; --forest-deep:#02160D;
+  --sage:#0E7C4A; --sage-light:#E6F4EC; --sage-line:#BFE3CD; --sage-soft:#3FAE78;
+  --gold:#C9973B; --gold-deep:#7A5C17; --gold-tint:#FBF3E1; --gold-soft:#E0B96A;
+  --paper:#F7F8F6; --card:#FFFFFF; --ink:#101614; --ink-muted:#5C6B64;
+  --line:#E2E7E3; --red:#C4342B; --red-tint:#FBEAE8; --red-line:#F0C4BF;
   /* Gradien "spektrum tinjauan": emas (pengajuan baru) → hijau (disetujui) —
      dipakai konsisten sebagai metafora perjalanan proposal, bukan hiasan lepas. */
   --grad-primary: linear-gradient(135deg, var(--sage) 0%, var(--forest) 100%);
@@ -241,6 +241,54 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
     </div>
 
     <div class="lg:col-span-2 flex flex-col gap-6">
+      <!-- Kartu Surat Pernyataan Kesediaan (Opsi B) diletakkan PALING ATAS —
+           logis diisi lebih dulu karena diperlukan sejak awal proses pengajuan
+           (langsung tersedia begitu pengajuan dikirim), sebelum kartu-kartu
+           lain yang baru relevan di tahap selanjutnya (lacak status, revisi,
+           output). -->
+      <div class="card card-accent p-7 sm:p-8">
+        <h2 class="font-display text-xl font-semibold mb-1" style="color:var(--forest)">Surat Pernyataan Kesediaan</h2>
+        <p class="text-sm mb-6" style="color:var(--ink-muted)">Draf surat sudah otomatis terisi sebagian dari data pengajuan Anda. Masukkan nomor pengajuan untuk mengunduh draf dan mengunggah versi yang sudah ditandatangani.</p>
+
+        <div class="flex gap-2 mb-3">
+          <input type="text" id="pernyataan-id-input" placeholder="REQ-007-A1B2" class="font-mono flex-1 min-w-0 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          <button onclick="checkPernyataanEligibility()" id="pernyataan-verify-btn" class="btn-gold px-3.5 sm:px-6 rounded-lg font-medium text-sm shrink-0 whitespace-nowrap">Verifikasi</button>
+        </div>
+        <p id="pernyataan-ineligible" class="hidden-view text-sm p-3 rounded-lg mb-4" style="background:var(--red-tint); color:var(--red)"></p>
+
+        <div id="pernyataan-form-wrap" class="hidden-view mt-6 pt-6 border-t" style="border-color:var(--line)">
+          <div id="pernyataan-download-box" class="p-4 rounded-lg mb-5 text-sm" style="background:var(--gold-tint); color:var(--forest-deep)">
+            <p class="mb-2">📄 Draf surat Anda sudah siap, terisi otomatis dengan Nama, NIM, Institusi, Email, WhatsApp, dan Nomor Pengajuan.</p>
+            <a id="pernyataan-download-link" href="#" target="_blank" class="font-medium underline" style="color:var(--forest)">Unduh Draf Surat Pernyataan Kesediaan →</a>
+            <p class="mt-2 text-xs">Lengkapi Tempat/Tanggal Lahir, Alamat KTP, dan Dosen Pembimbing (opsional) yang masih kosong, lalu tanda tangani sebelum diunggah kembali di bawah.</p>
+          </div>
+
+          <div id="pernyataan-already-signed" class="hidden-view p-4 rounded-lg mb-5 text-sm" style="background:var(--sage-light); border:1px solid var(--sage-line); color:var(--forest)">
+            ✅ Anda sudah pernah mengunggah versi bertanda tangan. Mengunggah berkas baru di bawah akan menggantikan berkas sebelumnya.
+          </div>
+
+          <div id="pernyataan-success" class="hidden-view p-5 rounded-xl mb-6" style="background:var(--sage-light); border:1px solid var(--sage-line)">
+            <p class="text-sm font-semibold" style="color:var(--sage)">Surat Pernyataan Kesediaan berhasil diunggah.</p>
+            <p class="text-sm mt-1" style="color:var(--forest)">Tim SRD akan memeriksanya sebagai bagian dari kelengkapan berkas pengajuan Anda.</p>
+          </div>
+          <div id="pernyataan-error" class="hidden-view p-4 rounded-lg mb-6 text-sm" style="background:var(--red-tint); color:var(--red)"></div>
+
+          <form id="pernyataan-form" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-1.5">Surat Pernyataan Kesediaan — sudah ditandatangani (PDF) *</label>
+              <div class="dropzone" data-for="pernyataan-file">
+                <input type="file" id="pernyataan-file" accept="application/pdf" class="hidden">
+                <svg class="icon mx-auto mb-1" style="width:1.4rem;height:1.4rem;color:var(--sage)" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <p class="text-sm" style="color:var(--ink-muted)">Tarik berkas ke sini atau <span class="dropzone-browse">pilih file</span></p>
+                <p class="dropzone-filename"></p>
+              </div>
+              <p class="text-xs mt-1" style="color:var(--ink-muted)">Format PDF, maks. 10 MB. Hasil scan/foto yang sudah ditandatangani, bukan draf kosong.</p>
+            </div>
+            <button type="submit" id="pernyataan-submit-btn" class="btn-primary w-full sm:w-auto px-8 py-3 rounded-lg font-medium text-sm">Unggah Surat Pernyataan</button>
+          </form>
+        </div>
+      </div>
+
       <div class="card card-accent p-7 sm:p-8">
         <h2 class="font-display text-xl font-semibold mb-1" style="color:var(--forest)">Lacak Status Pengajuan</h2>
         <p class="text-sm mb-5" style="color:var(--ink-muted)">Masukkan nomor pengajuan Anda (format REQ-0xx).</p>
@@ -577,6 +625,7 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
     <h3 class="font-display text-xl font-semibold mb-2" style="color:var(--forest)">Pengajuan Berhasil Dikirim!</h3>
     <p class="text-sm mb-1" style="color:var(--ink-muted)">Nomor pengajuan Anda:</p>
     <p id="success-modal-id" class="font-mono text-2xl font-semibold mb-4" style="color:var(--sage)"></p>
+    <a id="success-modal-pernyataan-link" href="#" target="_blank" class="hidden-view block text-sm font-medium underline mb-4" style="color:var(--forest)">📄 Unduh Draf Surat Pernyataan Kesediaan (sudah terisi otomatis)</a>
     <p class="text-sm mb-6" style="color:var(--ink-muted)">Simpan nomor ini untuk melacak status pengajuan Anda. Konfirmasi juga telah dikirim ke email Anda.</p>
     <button onclick="closeSuccessModal()" class="btn-primary w-full py-2.5 rounded-lg font-medium text-sm">Tutup</button>
   </div>
@@ -951,6 +1000,13 @@ document.getElementById('submission-form').addEventListener('submit', async func
       document.getElementById('success-id').textContent = res.displayId;
       document.getElementById('submission-success').classList.remove('hidden-view');
       document.getElementById('success-modal-id').textContent = res.displayId;
+      const pernyataanLink = document.getElementById('success-modal-pernyataan-link');
+      if(res.suratPernyataanTemplateUrl){
+        pernyataanLink.href = res.suratPernyataanTemplateUrl;
+        pernyataanLink.classList.remove('hidden-view');
+      } else {
+        pernyataanLink.classList.add('hidden-view');
+      }
       document.getElementById('success-modal').classList.remove('hidden-view');
       this.reset();
       document.getElementById('track-input').value = res.displayId;
@@ -990,6 +1046,7 @@ async function trackSubmission(){
       </div>
       ${timelineHTML(s.status)}
       ${s.status === 'Revisi Diminta' ? `<div class="mt-4 p-3 rounded-lg text-sm" style="background:var(--gold-tint); color:var(--forest-deep)">Status pengajuan Anda <b>"Revisi Diminta"</b> — silakan lengkapi revisi lewat kartu <b>"Kirim Revisi Proposal"</b> di bawah.</div>` : ''}
+      ${(s.suratPernyataanTemplateUrl && !s.suratPernyataanSignedUrl) ? `<div class="mt-4 p-3 rounded-lg text-sm" style="background:var(--gold-tint); color:var(--forest-deep)">Anda belum mengunggah Surat Pernyataan Kesediaan yang sudah ditandatangani — lengkapi lewat kartu <b>"Surat Pernyataan Kesediaan"</b> di bawah.</div>` : ''}
       ${s.letterUrl ? `<a href="${s.letterUrl}" target="_blank" class="block text-center mt-4 py-2.5 rounded-lg text-sm font-medium btn-gold">Unduh Surat Balasan</a>` : ''}
     `;
   } catch(err){
@@ -1112,7 +1169,9 @@ function renderReview(s){
   const files = [
     {label:'Surat Pengantar Kampus', url:s.LinkSuratPengantar},
     {label:'Draf Proposal', url:s.LinkProposal},
-    {label:'Instrumen Penelitian', url:s.LinkInstrumen}
+    {label:'Instrumen Penelitian', url:s.LinkInstrumen},
+    {label:'Surat Pernyataan Kesediaan (Draf Kosong)', url:s.LinkSuratPernyataanTemplate},
+    {label:'Surat Pernyataan Kesediaan (Sudah Ditandatangani)', url:s.LinkSuratPernyataanSigned}
   ].filter(f=>f.url);
   document.getElementById('review-files').innerHTML = files.length ? files.map(f=>`
     <a href="${f.url}" target="_blank" class="flex items-center gap-2 hover:underline" style="color:var(--sage)">
@@ -1222,7 +1281,10 @@ async function renderRepositori(){
 // ---------- ADMIN: STATISTIK ----------
 function renderStatistik(){
   const statuses = ['Pending','Under Review','Revisi Diminta','Approved','Rejected','Completed'];
-  const colors = {'Pending':'#EFEBDD','Under Review':'#DBE64C','Revisi Diminta':'#74C365','Approved':'#00804C','Rejected':'#B3432D','Completed':'#1E488F'};
+  // Palet donut chart diselaraskan dengan tema Emerald & Brass — gradasi dari
+  // netral (Pending) ke emas (dalam proses) ke emerald (disetujui/selesai),
+  // dengan merah & abu gelap untuk status yang butuh perhatian/berbeda jalur.
+  const colors = {'Pending':'#D8DED9','Under Review':'#E0B96A','Revisi Diminta':'#C9973B','Approved':'#0E7C4A','Rejected':'#C4342B','Completed':'#0B3B24'};
   const counts = statuses.map(st=>submissions.filter(s=>s.Status===st).length);
   const total = submissions.length;
   const safeDenominator = total || 1; // hanya untuk mencegah bagi-nol saat hitung persentase, TIDAK ditampilkan
@@ -1566,6 +1628,96 @@ document.getElementById('revision-form').addEventListener('submit', async functi
   }
 });
 
+// ---------- STUDENT: SURAT PERNYATAAN KESEDIAAN (Opsi B) ----------
+let currentPernyataanId = null;
+
+async function checkPernyataanEligibility(){
+  const id = document.getElementById('pernyataan-id-input').value.trim().toUpperCase();
+  const btn = document.getElementById('pernyataan-verify-btn');
+  const ineligible = document.getElementById('pernyataan-ineligible');
+  const formWrap = document.getElementById('pernyataan-form-wrap');
+  ineligible.classList.add('hidden-view');
+  formWrap.classList.add('hidden-view');
+  document.getElementById('pernyataan-success').classList.add('hidden-view');
+  if(!id) return;
+
+  btn.disabled = true; btn.textContent = 'Memeriksa…';
+  try{
+    const res = await apiGet({ action:'track', id });
+    if(!res.success){
+      ineligible.textContent = res.error || 'Nomor pengajuan tidak ditemukan.';
+      ineligible.classList.remove('hidden-view');
+      return;
+    }
+    if(!res.data.suratPernyataanTemplateUrl){
+      ineligible.textContent = 'Draf surat untuk nomor pengajuan ini belum tersedia. Silakan hubungi Divisi SRD.';
+      ineligible.classList.remove('hidden-view');
+      return;
+    }
+
+    currentPernyataanId = id;
+    document.getElementById('pernyataan-download-link').href = res.data.suratPernyataanTemplateUrl;
+
+    const sudahDiunggah = document.getElementById('pernyataan-already-signed');
+    sudahDiunggah.classList.toggle('hidden-view', !res.data.suratPernyataanSignedUrl);
+
+    formWrap.classList.remove('hidden-view');
+  } catch(err){
+    ineligible.textContent = err.message;
+    ineligible.classList.remove('hidden-view');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Verifikasi';
+  }
+}
+
+document.getElementById('pernyataan-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const btn = document.getElementById('pernyataan-submit-btn');
+  document.getElementById('pernyataan-error').classList.add('hidden-view');
+  btn.disabled = true; btn.textContent = 'Mengunggah…';
+
+  try{
+    const file = document.getElementById('pernyataan-file').files[0];
+    if(!file){
+      document.getElementById('pernyataan-error').textContent = 'Berkas Surat Pernyataan Kesediaan wajib diunggah.';
+      document.getElementById('pernyataan-error').classList.remove('hidden-view');
+      btn.disabled = false; btn.textContent = 'Unggah Surat Pernyataan';
+      return;
+    }
+
+    let fileB64;
+    try{
+      fileB64 = await readFileValidated(file, 'Surat Pernyataan Kesediaan');
+    } catch(sizeErr){
+      document.getElementById('pernyataan-error').textContent = sizeErr.message;
+      document.getElementById('pernyataan-error').classList.remove('hidden-view');
+      btn.disabled = false; btn.textContent = 'Unggah Surat Pernyataan';
+      return;
+    }
+
+    const res = await apiPost({
+      action:'uploadSuratPernyataan',
+      displayId: currentPernyataanId,
+      fileBase64: fileB64,
+      fileName: file.name
+    });
+
+    if(res.success){
+      document.getElementById('pernyataan-success').classList.remove('hidden-view');
+      this.reset();
+      this.classList.add('hidden-view');
+    } else {
+      document.getElementById('pernyataan-error').textContent = res.error || 'Gagal mengunggah Surat Pernyataan Kesediaan.';
+      document.getElementById('pernyataan-error').classList.remove('hidden-view');
+    }
+  } catch(err){
+    document.getElementById('pernyataan-error').textContent = 'Terjadi kesalahan jaringan: ' + err;
+    document.getElementById('pernyataan-error').classList.remove('hidden-view');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Unggah Surat Pernyataan';
+  }
+});
+
 // ---------- SESI ADMIN (bertahan lewat localStorage selama 8 jam — TIDAK ----------
 // ---------- hilang saat refresh atau saat dibuka di tab baru, hanya lewat ----------
 // ---------- logout eksplisit atau setelah 8 jam) ----------
@@ -1603,6 +1755,7 @@ async function tryRestoreAdminSession(){
 document.getElementById('track-input').addEventListener('keydown', e => { if(e.key === 'Enter') trackSubmission(); });
 document.getElementById('output-id-input').addEventListener('keydown', e => { if(e.key === 'Enter') checkOutputEligibility(); });
 document.getElementById('revision-id-input').addEventListener('keydown', e => { if(e.key === 'Enter') checkRevisionEligibility(); });
+document.getElementById('pernyataan-id-input').addEventListener('keydown', e => { if(e.key === 'Enter') checkPernyataanEligibility(); });
 document.getElementById('admin-password-input').addEventListener('keydown', e => { if(e.key === 'Enter') attemptAdminLogin(); });
 loadCategories();
 adminSessionRestorePromise = tryRestoreAdminSession();
