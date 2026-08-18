@@ -257,10 +257,36 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
         <p id="pernyataan-ineligible" class="hidden-view text-sm p-3 rounded-lg mb-4" style="background:var(--red-tint); color:var(--red)"></p>
 
         <div id="pernyataan-form-wrap" class="hidden-view mt-6 pt-6 border-t" style="border-color:var(--line)">
-          <div id="pernyataan-download-box" class="p-4 rounded-lg mb-5 text-sm" style="background:var(--gold-tint); color:var(--forest-deep)">
-            <p class="mb-2">📄 Draf surat Anda sudah siap, terisi otomatis dengan Nama, NIM, Institusi, Email, WhatsApp, dan Nomor Pengajuan.</p>
+
+          <!-- Tampil kalau TTL/Alamat KTP belum pernah diisi — dikumpulkan di sini
+               (bukan di form pengajuan utama) supaya form utama tetap ringkas dan
+               data KTP hanya diambil dari peneliti yang sudah sampai tahap ini. -->
+          <div id="pernyataan-lengkapi-wrap" class="hidden-view mb-5">
+            <div class="p-4 rounded-lg mb-4 text-sm" style="background:var(--gold-tint); color:var(--forest-deep)">
+              📝 Lengkapi 2 data berikut supaya draf surat Anda <b>100% terisi</b> — setelah ini Anda tinggal cetak, tanda tangan, dan scan, tanpa perlu menulis tangan lagi.
+            </div>
+            <form id="pernyataan-lengkapi-form" class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1.5">Tempat/Tanggal Lahir *</label>
+                <input type="text" id="pl-ttl" required placeholder="Jakarta, 17 Agustus 2000" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1.5">Alamat KTP *</label>
+                <textarea id="pl-alamat" rows="2" required placeholder="Sesuai KTP" class="w-full p-3 border rounded-lg text-sm" style="border-color:var(--line)"></textarea>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1.5">Dosen Pembimbing <span class="font-normal" style="color:var(--ink-muted)">(opsional)</span></label>
+                <input type="text" id="pl-dosen" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+              </div>
+              <div id="pernyataan-lengkapi-error" class="hidden-view p-3 rounded-lg text-sm" style="background:var(--red-tint); color:var(--red)"></div>
+              <button type="submit" id="pernyataan-lengkapi-btn" class="btn-primary w-full sm:w-auto px-8 py-3 rounded-lg font-medium text-sm">Buat &amp; Unduh Draf Lengkap</button>
+            </form>
+          </div>
+
+          <div id="pernyataan-download-box" class="hidden-view p-4 rounded-lg mb-5 text-sm" style="background:var(--gold-tint); color:var(--forest-deep)">
+            <p class="mb-2">📄 Draf surat Anda sudah 100% terisi.</p>
             <a id="pernyataan-download-link" href="#" target="_blank" class="font-medium underline" style="color:var(--forest)">Unduh Draf Surat Pernyataan Kesediaan →</a>
-            <p class="mt-2 text-xs">Lengkapi Tempat/Tanggal Lahir, Alamat KTP, dan Dosen Pembimbing (opsional) yang masih kosong, lalu tanda tangani sebelum diunggah kembali di bawah.</p>
+            <p class="mt-2 text-xs">Tinggal tanda tangani, lalu unggah kembali di bawah.</p>
           </div>
 
           <div id="pernyataan-already-signed" class="hidden-view p-4 rounded-lg mb-5 text-sm" style="background:var(--sage-light); border:1px solid var(--sage-line); color:var(--forest)">
@@ -1656,10 +1682,23 @@ async function checkPernyataanEligibility(){
     }
 
     currentPernyataanId = id;
-    document.getElementById('pernyataan-download-link').href = res.data.suratPernyataanTemplateUrl;
 
-    const sudahDiunggah = document.getElementById('pernyataan-already-signed');
-    sudahDiunggah.classList.toggle('hidden-view', !res.data.suratPernyataanSignedUrl);
+    const lengkapiWrap = document.getElementById('pernyataan-lengkapi-wrap');
+    const downloadBox = document.getElementById('pernyataan-download-box');
+
+    if(!res.data.dataPernyataanLengkap){
+      // TTL/Alamat KTP belum pernah diisi — tampilkan mini-form dulu,
+      // sembunyikan kotak unduh & status "sudah diunggah" sampai data dilengkapi.
+      lengkapiWrap.classList.remove('hidden-view');
+      downloadBox.classList.add('hidden-view');
+      document.getElementById('pernyataan-already-signed').classList.add('hidden-view');
+    } else {
+      lengkapiWrap.classList.add('hidden-view');
+      document.getElementById('pernyataan-download-link').href = res.data.suratPernyataanTemplateUrl;
+      downloadBox.classList.remove('hidden-view');
+      const sudahDiunggah = document.getElementById('pernyataan-already-signed');
+      sudahDiunggah.classList.toggle('hidden-view', !res.data.suratPernyataanSignedUrl);
+    }
 
     formWrap.classList.remove('hidden-view');
   } catch(err){
@@ -1669,6 +1708,37 @@ async function checkPernyataanEligibility(){
     btn.disabled = false; btn.textContent = 'Verifikasi';
   }
 }
+
+document.getElementById('pernyataan-lengkapi-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const btn = document.getElementById('pernyataan-lengkapi-btn');
+  document.getElementById('pernyataan-lengkapi-error').classList.add('hidden-view');
+  btn.disabled = true; btn.textContent = 'Membuat draf…';
+
+  try{
+    const res = await apiPost({
+      action:'lengkapiDataPernyataan',
+      displayId: currentPernyataanId,
+      tempatTanggalLahir: document.getElementById('pl-ttl').value.trim(),
+      alamatKTP: document.getElementById('pl-alamat').value.trim(),
+      dosenPembimbing: document.getElementById('pl-dosen').value.trim()
+    });
+
+    if(res.success){
+      document.getElementById('pernyataan-lengkapi-wrap').classList.add('hidden-view');
+      document.getElementById('pernyataan-download-link').href = res.suratPernyataanTemplateUrl;
+      document.getElementById('pernyataan-download-box').classList.remove('hidden-view');
+    } else {
+      document.getElementById('pernyataan-lengkapi-error').textContent = res.error || 'Gagal membuat draf lengkap.';
+      document.getElementById('pernyataan-lengkapi-error').classList.remove('hidden-view');
+    }
+  } catch(err){
+    document.getElementById('pernyataan-lengkapi-error').textContent = 'Terjadi kesalahan jaringan: ' + err;
+    document.getElementById('pernyataan-lengkapi-error').classList.remove('hidden-view');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Buat & Unduh Draf Lengkap';
+  }
+});
 
 document.getElementById('pernyataan-form').addEventListener('submit', async function(e){
   e.preventDefault();
