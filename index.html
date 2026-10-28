@@ -698,7 +698,7 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
 // terpisah dari tempat file ini di-hosting. Deploy Apps Script dulu,
 // salin URL /exec-nya, baru tempel di sini SEBELUM diunggah ke GitHub.
 // ============================================================
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwMrXZ9aXyY-mYtDq5Y9UBhB63uEf9kPkduX_OckWussvqXC5ViEsyiX7_bXStRJb2jDw/exec';
+const WEB_APP_URL = 'GANTI_DENGAN_URL_WEB_APP_ANDA';
 
 if (!WEB_APP_URL || WEB_APP_URL.indexOf('GANTI_DENGAN') !== -1) {
   document.getElementById('config-banner').classList.remove('hidden-view');
@@ -744,6 +744,17 @@ function initDropzone(zone){
   zone.addEventListener('drop', e => {
     if(e.dataTransfer.files[0]){ input.files = e.dataTransfer.files; refresh(); }
   });
+
+  // PENTING: form.reset() memang mengosongkan <input type="file">, TAPI tidak
+  // memicu event 'change' — sehingga nama berkas dan border hijau di dropzone
+  // tetap tertinggal di layar dan terlihat seolah berkasnya masih terlampir
+  // padahal pengajuan sudah terkirim. Karena itu dropzone ikut mendengarkan
+  // event 'reset' dari form induknya. setTimeout(0) diperlukan karena saat
+  // event 'reset' menyala, nilai field belum benar-benar dikosongkan browser.
+  const parentForm = zone.closest('form');
+  if(parentForm){
+    parentForm.addEventListener('reset', () => setTimeout(refresh, 0));
+  }
 }
 document.querySelectorAll('.dropzone').forEach(initDropzone);
 
@@ -751,11 +762,19 @@ document.querySelectorAll('.dropzone').forEach(initDropzone);
 function wireWordCounter(textareaId, counterId, maxWords){
   const ta = document.getElementById(textareaId);
   const counter = document.getElementById(counterId);
-  ta.addEventListener('input', () => {
+  function refresh(){
     const words = ta.value.trim() ? ta.value.trim().split(/\s+/).length : 0;
     counter.textContent = `${words} / ${maxWords} kata`;
     counter.style.color = words > maxWords ? 'var(--red)' : 'var(--ink-muted)';
-  });
+  }
+  ta.addEventListener('input', refresh);
+  // Sama seperti dropzone di atas: form.reset() mengosongkan textarea tapi
+  // tidak memicu 'input', jadi penghitung kata ikut mendengarkan 'reset'
+  // supaya tidak tertinggal menampilkan jumlah kata dari kiriman sebelumnya.
+  const parentForm = ta.closest('form');
+  if(parentForm){
+    parentForm.addEventListener('reset', () => setTimeout(refresh, 0));
+  }
 }
 wireWordCounter('o-summary', 'o-summary-count', 300);
 wireWordCounter('o-recommendations', 'o-recommendations-count', 150);
@@ -1282,24 +1301,42 @@ async function renderRepositori(){
     // berkas) alih-alih macet total — admin masih bisa lihat daftar riset.
   }
 
+  // Teks panjang (ringkasan/rekomendasi bisa sampai 300 kata) dibungkus
+  // <details> supaya kartu tetap ringkas dan grid tetap mudah dipindai,
+  // tapi isinya tetap bisa dibaca penuh tanpa keluar dari halaman ini.
+  function seksiTeks(judul, isi){
+    if(!isi || !String(isi).trim()) return '';
+    return `
+      <details class="mt-3 pt-3 border-t" style="border-color:var(--line)">
+        <summary class="text-xs font-semibold cursor-pointer" style="color:var(--sage)">${judul}</summary>
+        <p class="text-sm mt-2 whitespace-pre-line leading-relaxed" style="color:var(--ink-muted)">${escapeHtml(isi)}</p>
+      </details>`;
+  }
+
   grid.innerHTML = approved.map(s=>{
     const out = outputsByDisplayId[s.DisplayID];
     let fileLinks = '';
+    let teksOutput = '';
     if(out){
       const links = [
         out.LinkInfografis ? `<a href="${out.LinkInfografis}" target="_blank" class="text-xs font-medium px-3 py-1.5 rounded-lg border inline-flex items-center gap-1.5" style="border-color:var(--line); color:var(--sage)">📊 Infografis</a>` : '',
-        out.LinkNaskahAkhir ? `<a href="${out.LinkNaskahAkhir}" target="_blank" class="text-xs font-medium px-3 py-1.5 rounded-lg border inline-flex items-center gap-1.5" style="border-color:var(--line); color:var(--sage)">📄 Naskah Akademik</a>` : ''
+        out.LinkNaskahAkhir ? `<a href="${out.LinkNaskahAkhir}" target="_blank" class="text-xs font-medium px-3 py-1.5 rounded-lg border inline-flex items-center gap-1.5" style="border-color:var(--line); color:var(--sage)">📄 Naskah Akademik</a>` : '',
+        out.LinkDataset ? `<a href="${out.LinkDataset}" target="_blank" class="text-xs font-medium px-3 py-1.5 rounded-lg border inline-flex items-center gap-1.5" style="border-color:var(--line); color:var(--sage)">🗂️ Dataset</a>` : ''
       ].filter(Boolean).join('');
       if(links){
         fileLinks = `<div class="flex flex-wrap gap-2 mt-3">${links}</div>`;
       }
+      teksOutput =
+        seksiTeks('📋 Ringkasan Eksekutif', out.RingkasanEksekutif) +
+        seksiTeks('💡 Rekomendasi Praktis untuk LAZNAS IZI', out.RekomendasiPraktis);
     }
     return `
     <div class="card p-6 flex flex-col">
       <p class="eyebrow mb-2">${escapeHtml(s.JenjangPenelitian)} · ${fmtDate(s.Timestamp)}</p>
       <p class="font-display font-semibold leading-snug mb-3" style="color:var(--forest)">${escapeHtml(s.JudulRiset)}</p>
       <p class="text-sm pt-3 border-t" style="border-color:var(--line); color:var(--ink-muted)">${escapeHtml(s.NamaPeneliti)}<br>${escapeHtml(s.Institusi)}</p>
-      ${fileLinks || '<p class="text-xs mt-3" style="color:var(--ink-muted)">Output riset belum diserahkan.</p>'}
+      ${teksOutput}
+      ${(fileLinks || teksOutput) ? fileLinks : '<p class="text-xs mt-3" style="color:var(--ink-muted)">Output riset belum diserahkan.</p>'}
     </div>`;
   }).join('') || `<p class="text-sm col-span-3" style="color:var(--ink-muted)">Belum ada riset yang disetujui.</p>`;
 }
