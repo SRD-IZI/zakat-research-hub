@@ -130,11 +130,15 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
       </div>
     </div>
     <nav class="flex items-center gap-1 p-1 rounded-full shrink-0" style="background:var(--sage-light)">
-      <button onclick="setRole('student')" id="tab-student" class="tab-pill active px-2.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap">
-        <span class="sm:hidden">Peneliti</span><span class="hidden sm:inline">Portal Peneliti</span>
+      <button onclick="setRole('student')" id="tab-student" class="tab-pill active px-2.5 sm:px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap" title="Pengajuan penelitian & akses data untuk mahasiswa">
+        <span class="sm:hidden">Riset</span><span class="hidden sm:inline">Pengajuan Riset</span>
       </button>
-      <button onclick="setRole('admin')" id="tab-admin" class="tab-pill px-2.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap">
-        <span class="sm:hidden">Admin</span><span class="hidden sm:inline">Dasbor Admin SRD</span>
+      <button onclick="setRole('publikasi')" id="tab-publikasi" class="tab-pill px-2.5 sm:px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap" title="Bantuan biaya publikasi ilmiah (Article Processing Charge)">
+        <span class="sm:hidden">APC</span><span class="hidden sm:inline">Bantuan Publikasi</span>
+      </button>
+      <span class="w-px h-5 mx-0.5 sm:mx-1 shrink-0" style="background:var(--sage-line)" aria-hidden="true"></span>
+      <button onclick="setRole('admin')" id="tab-admin" class="tab-pill px-2.5 sm:px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap" title="Khusus pengelola Divisi SRD">
+        <span class="sm:hidden">Admin</span><span class="hidden sm:inline">Admin SRD</span>
       </button>
     </nav>
   </div>
@@ -432,14 +436,37 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
     </div>
   </section>
 
-  <!-- ============ LAYANAN KEDUA: BANTUAN BIAYA PUBLIKASI (APC) ============ -->
+  <!-- Jembatan ke layanan kedua -->
+  <section class="max-w-7xl mx-auto px-5 sm:px-8 pb-20">
+    <button onclick="setRole('publikasi')" class="w-full text-left card p-6 sm:p-7 transition hover:shadow-lg" style="border-left:3px solid var(--gold)">
+      <p class="eyebrow mb-2" style="color:var(--gold-deep)">Layanan lain dari SRD</p>
+      <h3 class="font-display text-xl font-semibold mb-1.5" style="color:var(--forest)">Artikel Anda sudah diterima jurnal?</h3>
+      <p class="text-sm leading-relaxed max-w-2xl" style="color:var(--ink-muted)">
+        SRD LAZNAS IZI menyediakan <b>Bantuan Biaya Publikasi Ilmiah (APC)</b> bagi penulis artikel yang menjadikan LAZNAS IZI sebagai objek penelitian dan diterbitkan pada jurnal terakreditasi SINTA 1–4 atau terindeks Scopus Q1–Q4.
+      </p>
+      <span class="inline-block mt-3 text-sm font-medium" style="color:var(--sage)">Buka Bantuan Publikasi &rarr;</span>
+    </button>
+  </section>
+</main>
+
+<!-- ============ LAYANAN KEDUA: BANTUAN BIAYA PUBLIKASI (APC) ============ -->
+<main id="view-publikasi" class="hidden-view">
+  <section class="max-w-7xl mx-auto px-5 sm:px-8 pt-14 pb-10 relative overflow-hidden">
+    <div class="hero-aurora"></div>
+    <div class="hero-content max-w-4xl fade-up">
+      <p class="eyebrow mb-3">© Divisi SRD (System, Research &amp; Development)</p>
+      <h1 class="font-display text-[2.35rem] sm:text-[3.25rem] leading-[1.08] font-semibold tracking-tight" style="color:var(--forest)">
+        Bantuan biaya publikasi ilmiah,<br>
+        <span style="background:var(--grad-primary); -webkit-background-clip:text; background-clip:text; color:transparent;">untuk artikel Anda.</span>
+      </h1>
+      <p class="mt-5 text-[1.05rem] sm:text-[1.15rem] leading-relaxed max-w-2xl" style="color:var(--ink-muted)">
+        SRD LAZNAS IZI mengganti biaya <i>Article Processing Charge</i> bagi penulis artikel yang menjadikan LAZNAS IZI sebagai objek penelitian, dan diterbitkan pada jurnal terakreditasi SINTA 1–4 atau terindeks Scopus Q1–Q4. Terbuka untuk mahasiswa, dosen, peneliti independen, maupun amil IZI.
+      </p>
+    </div>
+  </section>
+
   <section class="max-w-7xl mx-auto px-5 sm:px-8 pb-20">
     <div class="card card-accent p-7 sm:p-8">
-      <p class="eyebrow mb-2">Layanan Kedua</p>
-      <h2 class="font-display text-2xl font-semibold mb-1" style="color:var(--forest)">Bantuan Biaya Publikasi Ilmiah (APC)</h2>
-      <p class="text-sm mb-6 max-w-3xl" style="color:var(--ink-muted)">
-        Bantuan penggantian biaya <i>Article Processing Charge</i> bagi penulis artikel yang menjadikan LAZNAS IZI sebagai objek penelitian, dan diterbitkan pada jurnal terakreditasi SINTA 1–4 atau terindeks Scopus Q1–Q4.
-      </p>
 
       <div class="p-4 rounded-lg mb-6 text-sm leading-relaxed" style="background:var(--gold-tint); color:var(--forest-deep)">
         <b>Model bantuan: penggantian.</b> Anda membayar APC terlebih dahulu kepada jurnal, lalu mengajukan penggantian di sini dengan melampirkan bukti pembayaran. Permohonan diajukan paling lambat <b>3 bulan</b> sejak tanggal pembayaran.
@@ -546,6 +573,18 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- Jembatan balik ke layanan pertama -->
+  <section class="max-w-7xl mx-auto px-5 sm:px-8 pb-20">
+    <button onclick="setRole('student')" class="w-full text-left card p-6 sm:p-7 transition hover:shadow-lg" style="border-left:3px solid var(--sage)">
+      <p class="eyebrow mb-2">Layanan lain dari SRD</p>
+      <h3 class="font-display text-xl font-semibold mb-1.5" style="color:var(--forest)">Belum mulai meneliti di LAZNAS IZI?</h3>
+      <p class="text-sm leading-relaxed max-w-2xl" style="color:var(--ink-muted)">
+        Ajukan izin penelitian dan akses data melalui layanan <b>Pengajuan Riset</b> — untuk mahasiswa yang menulis skripsi, tesis, atau disertasi seputar zakat.
+      </p>
+      <span class="inline-block mt-3 text-sm font-medium" style="color:var(--sage)">Buka Pengajuan Riset &rarr;</span>
+    </button>
   </section>
 </main>
 
@@ -1080,11 +1119,26 @@ async function apiPost(payload){
 }
 
 // ---------- ROLE / VIEW SWITCH ----------
-async function setRole(role){
-  document.getElementById('view-student').classList.toggle('hidden-view', role!=='student');
-  document.getElementById('view-admin').classList.toggle('hidden-view', role!=='admin');
-  document.getElementById('tab-student').classList.toggle('active', role==='student');
-  document.getElementById('tab-admin').classList.toggle('active', role==='admin');
+// Tiga layanan tingkat atas: 'student' (Pengajuan Riset), 'publikasi'
+// (Bantuan APC), dan 'admin'. Masing-masing punya alamat sendiri lewat hash
+// URL (#riset / #publikasi / #admin) supaya tautannya bisa dibagikan langsung
+// — misalnya tautan sosialisasi program APC yang membuka formulirnya seketika.
+const PETA_HASH_ROLE = { '#riset':'student', '#publikasi':'publikasi', '#admin':'admin' };
+const PETA_ROLE_HASH = { student:'#riset', publikasi:'#publikasi', admin:'#admin' };
+
+async function setRole(role, opsi){
+  const perbaruiHash = !(opsi && opsi.tanpaHash);
+  ['student','publikasi','admin'].forEach(v=>{
+    document.getElementById('view-'+v).classList.toggle('hidden-view', v!==role);
+    document.getElementById('tab-'+v).classList.toggle('active', v===role);
+  });
+  if(perbaruiHash && location.hash !== PETA_ROLE_HASH[role]){
+    history.replaceState(null, '', PETA_ROLE_HASH[role]);
+  }
+  // Pindah layanan selalu kembali ke bagian atas halaman — kalau tidak,
+  // pengguna yang mengeklik jembatan di bagian bawah akan mendarat di
+  // tengah-tengah layanan berikutnya dan tidak melihat judulnya.
+  if(perbaruiHash) window.scrollTo({ top:0, behavior:'instant' });
   if(role==='admin'){
     // Kalau pemulihan sesi dari localStorage masih berjalan (baru saja refresh/
     // baru buka tab), tunggu dulu selesai sebelum memutuskan tampil layar login
@@ -2563,6 +2617,16 @@ document.getElementById('apc-track-input').addEventListener('keydown', e => { if
 buildApcDropzones();
 loadCategories();
 adminSessionRestorePromise = tryRestoreAdminSession();
+
+// Buka layanan sesuai hash di alamat (mis. .../#publikasi membuka Bantuan APC
+// langsung), dan ikuti bila pengguna menekan tombol maju/mundur peramban.
+if(PETA_HASH_ROLE[location.hash]) setRole(PETA_HASH_ROLE[location.hash], { tanpaHash:true });
+window.addEventListener('hashchange', () => {
+  // Hash yang tidak dikenal (termasuk hash kosong setelah tombol mundur)
+  // dikembalikan ke layanan pertama, supaya alamat dan tampilan tidak pernah
+  // bertentangan.
+  setRole(PETA_HASH_ROLE[location.hash] || 'student', { tanpaHash:true });
+});
 </script>
 </body>
 </html>
