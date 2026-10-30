@@ -431,6 +431,122 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
     </div>
     </div>
   </section>
+
+  <!-- ============ LAYANAN KEDUA: BANTUAN BIAYA PUBLIKASI (APC) ============ -->
+  <section class="max-w-7xl mx-auto px-5 sm:px-8 pb-20">
+    <div class="card card-accent p-7 sm:p-8">
+      <p class="eyebrow mb-2">Layanan Kedua</p>
+      <h2 class="font-display text-2xl font-semibold mb-1" style="color:var(--forest)">Bantuan Biaya Publikasi Ilmiah (APC)</h2>
+      <p class="text-sm mb-6 max-w-3xl" style="color:var(--ink-muted)">
+        Bantuan penggantian biaya <i>Article Processing Charge</i> bagi penulis artikel yang menjadikan LAZNAS IZI sebagai objek penelitian, dan diterbitkan pada jurnal terakreditasi SINTA 1–4 atau terindeks Scopus Q1–Q4.
+      </p>
+
+      <div class="p-4 rounded-lg mb-6 text-sm leading-relaxed" style="background:var(--gold-tint); color:var(--forest-deep)">
+        <b>Model bantuan: penggantian.</b> Anda membayar APC terlebih dahulu kepada jurnal, lalu mengajukan penggantian di sini dengan melampirkan bukti pembayaran. Permohonan diajukan paling lambat <b>3 bulan</b> sejak tanggal pembayaran.
+      </div>
+
+      <!-- Tab sederhana: ajukan / lacak -->
+      <div class="flex gap-2 mb-6 flex-wrap">
+        <button onclick="setApcTab('ajukan')" id="apc-tab-ajukan" class="tab-pill active px-4 py-2 rounded-full text-sm font-medium">Ajukan Permohonan</button>
+        <button onclick="setApcTab('lacak')" id="apc-tab-lacak" class="tab-pill px-4 py-2 rounded-full text-sm font-medium">Lacak &amp; Lapor Artikel Terbit</button>
+      </div>
+
+      <!-- ---------- TAB: AJUKAN ---------- -->
+      <div id="apc-panel-ajukan">
+        <div id="apc-success" class="hidden-view p-5 rounded-xl mb-6" style="background:var(--sage-light); border:1px solid var(--sage-line)">
+          <p class="text-sm font-semibold" style="color:var(--sage)">Permohonan berhasil dikirim.</p>
+          <p class="text-sm mt-1" style="color:var(--forest)">Nomor permohonan Anda: <span id="apc-success-id" class="font-mono font-semibold"></span></p>
+        </div>
+        <div id="apc-error" class="hidden-view p-4 rounded-lg mb-6 text-sm" style="background:var(--red-tint); color:var(--red)"></div>
+
+        <form id="apc-form" class="space-y-4">
+          <p class="text-xs font-semibold" style="color:var(--ink-muted)">DATA PEMOHON</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <input required id="apc-nama" placeholder="Nama lengkap pemohon *" class="px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+            <input required id="apc-institusi" placeholder="Institusi/afiliasi *" class="px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <input required type="email" id="apc-email" placeholder="Email aktif *" class="px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+            <input id="apc-wa" placeholder="Nomor WhatsApp" class="px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1.5">Status hubungan dengan LAZNAS IZI *</label>
+            <select required id="apc-status-pemohon" onchange="onApcStatusPemohonChange()" class="w-full px-3.5 py-2.5 rounded-lg border bg-white" style="border-color:var(--line)">
+              <option value="Umum">Tidak memiliki hubungan kepegawaian/kepentingan</option>
+              <option value="Amil IZI">Merupakan amil LAZNAS IZI</option>
+              <option value="Terafiliasi Amil">Memiliki hubungan keluarga/kepentingan dengan amil LAZNAS IZI</option>
+            </select>
+            <p class="text-xs mt-1" style="color:var(--ink-muted)">Wajib diungkapkan sesuai ketentuan benturan kepentingan pada Pedoman Program.</p>
+          </div>
+          <div id="apc-divisi-wrap" class="hidden-view">
+            <input id="apc-divisi" placeholder="Sebutkan divisi / bentuk hubungan" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1.5">Nomor Pengajuan Riset di Portal ini <span class="font-normal" style="color:var(--ink-muted)">(opsional)</span></label>
+            <input id="apc-nomor-riset" placeholder="REQ-007-A1B2" class="font-mono w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+            <p class="text-xs mt-1" style="color:var(--ink-muted)">Diisi bila penelitian Anda sebelumnya diajukan melalui layanan Pengajuan Penelitian di portal ini.</p>
+          </div>
+
+          <p class="text-xs font-semibold pt-2" style="color:var(--ink-muted)">DATA ARTIKEL &amp; JURNAL</p>
+          <input required id="apc-judul" placeholder="Judul artikel *" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          <input required id="apc-jurnal" placeholder="Nama jurnal *" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <select required id="apc-kategori" onchange="onApcKategoriChange()" class="px-3.5 py-2.5 rounded-lg border bg-white" style="border-color:var(--line)">
+              <option value="">Kategori jurnal *</option>
+              <option value="SINTA">Nasional terakreditasi SINTA</option>
+              <option value="Scopus">Internasional terindeks Scopus</option>
+            </select>
+            <select required id="apc-peringkat" class="px-3.5 py-2.5 rounded-lg border bg-white" style="border-color:var(--line)">
+              <option value="">Peringkat *</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5">Tautan bukti akreditasi/indeksasi jurnal *</label>
+            <input required type="url" id="apc-tautan-bukti" placeholder="https://sinta.kemdikbud.go.id/journals/… atau tautan Scopus" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+            <p class="text-xs mt-1" style="color:var(--ink-muted)">Harus dapat ditelusuri secara mandiri oleh verifikator — bukan tangkapan layar.</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs mb-1" style="color:var(--ink-muted)">Tanggal pembayaran APC *</label>
+              <input required type="date" id="apc-tanggal-bayar" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+            </div>
+            <div>
+              <label class="block text-xs mb-1" style="color:var(--ink-muted)">Nominal APC yang dibayarkan *</label>
+              <input required id="apc-nominal" placeholder="Contoh: 1.500.000" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+            </div>
+          </div>
+
+          <p class="text-xs font-semibold pt-2" style="color:var(--ink-muted)">BERKAS (PDF, maks. 10 MB per berkas)</p>
+          <div id="apc-dropzones" class="space-y-4"></div>
+
+          <button type="submit" id="apc-submit-btn" class="btn-primary w-full sm:w-auto px-8 py-3 rounded-lg font-medium text-sm mt-2">Kirim Permohonan</button>
+        </form>
+      </div>
+
+      <!-- ---------- TAB: LACAK ---------- -->
+      <div id="apc-panel-lacak" class="hidden-view">
+        <div class="flex gap-2 mb-3">
+          <input type="text" id="apc-track-input" placeholder="APC-001-A1B2" class="font-mono flex-1 min-w-0 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+          <button onclick="trackApc()" id="apc-track-btn" class="btn-gold px-4 sm:px-6 rounded-lg font-medium text-sm shrink-0 whitespace-nowrap">Lacak</button>
+        </div>
+        <div id="apc-track-result"></div>
+
+        <div id="apc-terbit-wrap" class="hidden-view mt-6 pt-6 border-t" style="border-color:var(--line)">
+          <p class="text-sm mb-3" style="color:var(--ink-muted)">Bantuan Anda sudah dicairkan. Sesuai Pedoman Program, mohon sampaikan tautan artikel yang sudah terbit.</p>
+          <div id="apc-terbit-success" class="hidden-view p-4 rounded-lg mb-4 text-sm" style="background:var(--sage-light); border:1px solid var(--sage-line); color:var(--forest)">
+            Terima kasih — tautan artikel terbit sudah kami terima.
+          </div>
+          <div id="apc-terbit-error" class="hidden-view p-3 rounded-lg mb-4 text-sm" style="background:var(--red-tint); color:var(--red)"></div>
+          <form id="apc-terbit-form" class="space-y-3">
+            <input required id="apc-doi" placeholder="DOI atau tautan artikel terbit *" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+            <button type="submit" id="apc-terbit-btn" class="btn-primary px-8 py-3 rounded-lg font-medium text-sm">Kirim Tautan Artikel</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <!-- ============ ADMIN VIEW ============ -->
@@ -464,6 +580,9 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
         </a>
         <a href="#" onclick="setAdminSubview('statistik');return false;" id="nav-statistik" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 20V10m6 10V4m6 16v-7" stroke-linecap="round" stroke-linejoin="round"/></svg> Statistik
+        </a>
+        <a href="#" onclick="setAdminSubview('apc');return false;" id="nav-apc" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18M8 7h8M8 12h8M8 17h5" stroke-linecap="round" stroke-linejoin="round"/></svg> Bantuan APC
         </a>
         <a href="#" onclick="setAdminSubview('kategori');return false;" id="nav-kategori" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7h10M7 12h10M7 17h6" stroke-linecap="round" stroke-linejoin="round"/></svg> Kategori Topik
@@ -629,6 +748,105 @@ input:focus,select:focus,textarea:focus{outline:none; border-color:var(--sage); 
         <div id="category-list" class="divide-y" style="border-color:var(--line)"></div>
       </div>
     </section>
+
+    <!-- ============ ADMIN: BANTUAN APC ============ -->
+    <section id="admin-apc" class="hidden-view flex-1 min-h-0 overflow-y-auto p-5 sm:p-8 admin-content-max">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h2 class="font-display text-2xl font-semibold" style="color:var(--forest)">Bantuan Biaya Publikasi (APC)</h2>
+          <p class="text-sm mt-0.5" style="color:var(--ink-muted)">Verifikasi dan putuskan permohonan penggantian biaya publikasi.</p>
+        </div>
+        <button onclick="fetchApcList()" title="Muat ulang" class="p-2.5 border rounded-lg shrink-0 self-start" style="border-color:var(--line); color:var(--ink-muted)">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 106-8.5M3 4v5h5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <div id="apc-kuota-box" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-7"></div>
+      <div id="apc-admin-alert"></div>
+
+      <div class="card overflow-hidden mb-6">
+        <div class="p-5 border-b flex items-center justify-between" style="border-color:var(--line); background:var(--sage-light)">
+          <h3 class="font-semibold text-sm" style="color:var(--forest)">Daftar Permohonan</h3>
+          <span class="text-xs font-mono" style="color:var(--ink-muted)" id="apc-count"></span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead style="background:#FCFAF4; color:var(--ink-muted); border-bottom:1px solid var(--line)">
+              <tr>
+                <th class="px-5 py-3.5 font-medium">Nomor</th>
+                <th class="px-5 py-3.5 font-medium">Pemohon</th>
+                <th class="px-5 py-3.5 font-medium">Artikel &amp; Jurnal</th>
+                <th class="px-5 py-3.5 font-medium">Nominal</th>
+                <th class="px-5 py-3.5 font-medium">Status</th>
+                <th class="px-5 py-3.5 font-medium text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="apc-tbody" class="divide-y" style="border-color:var(--line)"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Panel detail & verifikasi -->
+      <div id="apc-detail-panel" class="hidden-view card p-6 sm:p-7">
+        <div class="flex justify-between items-center mb-5">
+          <h3 class="font-display font-semibold text-lg" style="color:var(--forest)">Detail &amp; Verifikasi Permohonan</h3>
+          <button onclick="tutupApcDetail()" class="btn-secondary px-3 py-1.5 text-xs rounded-lg">✕ Tutup</button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <p class="text-xs font-semibold mb-3" style="color:var(--ink-muted)">DATA PERMOHONAN</p>
+            <div id="apc-detail-data" class="text-sm space-y-1.5"></div>
+
+            <p class="text-xs font-semibold mt-5 mb-3" style="color:var(--ink-muted)">BERKAS TERLAMPIR</p>
+            <div id="apc-detail-berkas" class="space-y-2 text-sm"></div>
+          </div>
+
+          <div>
+            <p class="text-xs font-semibold mb-3" style="color:var(--ink-muted)">DAFTAR PERIKSA VERIFIKASI (LAMPIRAN I PEDOMAN)</p>
+            <div id="apc-ceklis" class="space-y-2 text-sm mb-4"></div>
+            <p id="apc-ceklis-info" class="text-xs mb-4" style="color:var(--ink-muted)"></p>
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--line);margin:22px 0">
+
+        <div id="apc-keputusan-wrap">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-sm font-medium mb-1.5">Nama verifikator *</label>
+              <input id="apc-verifikator" placeholder="Nama petugas yang memverifikasi" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5">Nominal disetujui (Rp)</label>
+              <input id="apc-nominal-setuju" placeholder="Contoh: 1.500.000" class="w-full px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1.5">Catatan untuk pemohon</label>
+            <textarea id="apc-catatan" rows="3" placeholder="Wajib diisi untuk keputusan Perlu Kelengkapan atau Ditolak…" class="w-full p-3 border rounded-lg text-sm" style="border-color:var(--line)"></textarea>
+          </div>
+          <div id="apc-keputusan-alert" class="mb-3"></div>
+          <div class="flex flex-wrap gap-2.5">
+            <button onclick="putuskanApc('Verifikasi')" class="btn-secondary px-5 py-2.5 rounded-lg text-sm font-medium">Tandai Sedang Diverifikasi</button>
+            <button onclick="putuskanApc('Disetujui')" class="btn-primary px-5 py-2.5 rounded-lg text-sm font-medium">Setujui</button>
+            <button onclick="putuskanApc('Perlu Kelengkapan')" class="btn-outline-amber px-5 py-2.5 rounded-lg text-sm font-medium">Perlu Kelengkapan</button>
+            <button onclick="putuskanApc('Ditolak')" class="btn-outline-red px-5 py-2.5 rounded-lg text-sm font-medium">Tolak</button>
+          </div>
+        </div>
+
+        <div id="apc-cair-wrap" class="hidden-view">
+          <p class="text-sm mb-3" style="color:var(--ink-muted)">Permohonan sudah disetujui. Catat bukti pencairan setelah dana ditransfer melalui mekanisme keuangan Lembaga.</p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input id="apc-nomor-bukti" placeholder="Nomor bukti transaksi *" class="flex-1 px-3.5 py-2.5 rounded-lg border" style="border-color:var(--line)">
+            <button onclick="catatPencairanApc()" class="btn-primary px-6 py-2.5 rounded-lg text-sm font-medium shrink-0">Catat Pencairan</button>
+          </div>
+          <div id="apc-cair-alert" class="mt-3"></div>
+        </div>
+
+        <div id="apc-selesai-wrap" class="hidden-view p-4 rounded-lg text-sm" style="background:var(--sage-light); color:var(--forest)"></div>
+      </div>
+    </section>
     </div>
   </div>
 </main>
@@ -786,28 +1004,76 @@ function toggleSidebar(open){
 }
 
 // ---------- FETCH HELPERS ----------
+
+// Dipanggil sebelum setiap permintaan. Kalau WEB_APP_URL belum diisi, fetch
+// akan dianggap alamat RELATIF oleh browser — jadi permintaan nyasar ke
+// Vercel (bukan ke Apps Script), dan Vercel membalas halaman HTML 404
+// ("The page could not be found"). JSON.parse lalu gagal dengan pesan
+// "Unexpected token 'T'" yang sama sekali tidak menjelaskan akar masalahnya.
+// Pemeriksaan di bawah menghentikannya lebih awal dengan pesan yang jelas.
+function pastikanUrlTerisi(){
+  if(!WEB_APP_URL || WEB_APP_URL.indexOf('GANTI_DENGAN') !== -1){
+    throw new Error('WEB_APP_URL belum diisi di index.html. Tempel URL Web App Apps Script Anda (yang diakhiri /exec) pada baris const WEB_APP_URL, lalu unggah ulang ke GitHub.');
+  }
+  if(WEB_APP_URL.indexOf('/exec') === -1){
+    throw new Error('WEB_APP_URL sepertinya bukan alamat Web App yang benar — alamatnya harus diakhiri /exec, bukan /dev atau URL editor Apps Script.');
+  }
+}
+
+// Membaca jawaban server sebagai teks dulu, baru di-parse. Kalau yang datang
+// ternyata HTML (bukan JSON), kita bisa mengenali HALAMAN APA itu dan memberi
+// petunjuk perbaikan yang tepat, alih-alih melempar error parser mentah.
+async function bacaJawabanApi(res){
+  const teks = await res.text();
+  try{
+    return JSON.parse(teks);
+  } catch(e){
+    const polos = teks.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    if(/not be found|not found|404/i.test(polos)){
+      throw new Error('Alamat Apps Script tidak ditemukan (server membalas halaman 404). Kemungkinan URL-nya salah/kedaluwarsa — buka Apps Script > Deploy > Manage deployments, salin ulang URL /exec yang aktif, lalu perbarui WEB_APP_URL di index.html.');
+    }
+    if(/sign in|masuk|accounts\.google|authoriz|permission|izin/i.test(polos)){
+      throw new Error('Server meminta login Google. Buka Apps Script > Deploy > Manage deployments > ikon pensil, dan pastikan "Who has access" disetel ke Anyone (bukan "Only myself"), lalu Deploy ulang sebagai New version.');
+    }
+    if(/error|kesalahan|exception/i.test(polos)){
+      throw new Error('Apps Script membalas halaman error: "' + polos.slice(0, 150) + '". Cek Executions di editor Apps Script untuk detailnya.');
+    }
+    throw new Error('Server membalas format tak dikenal (bukan JSON): "' + polos.slice(0, 120) + '"');
+  }
+}
+
 async function apiGet(params){
+  pastikanUrlTerisi();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 20000);
   try{
     const res = await fetch(WEB_APP_URL + '?' + new URLSearchParams(params).toString(), { signal: controller.signal });
-    return await res.json();
+    return await bacaJawabanApi(res);
   } catch(err){
     if(err.name === 'AbortError') throw new Error('Server tidak merespons dalam 20 detik. Coba lagi.');
-    throw new Error('Gagal terhubung ke server. Periksa koneksi internet Anda atau coba lagi. [' + err.message + ']');
+    // TypeError dari fetch = kegagalan jaringan sungguhan (offline/DNS/CORS).
+    // Error lain berasal dari bacaJawabanApi() di atas, yang pesannya sudah
+    // spesifik — jangan ditimpa pesan umum "periksa koneksi internet".
+    if(err instanceof TypeError) throw new Error('Gagal terhubung ke server. Periksa koneksi internet Anda, lalu coba lagi.');
+    throw err;
   } finally {
     clearTimeout(timeout);
   }
 }
 async function apiPost(payload){
+  pastikanUrlTerisi();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 20000);
   try{
     const res = await fetch(WEB_APP_URL, { method:'POST', body: JSON.stringify(payload), signal: controller.signal });
-    return await res.json();
+    return await bacaJawabanApi(res);
   } catch(err){
     if(err.name === 'AbortError') throw new Error('Server tidak merespons dalam 20 detik. Coba lagi.');
-    throw new Error('Gagal terhubung ke server. Periksa koneksi internet Anda atau coba lagi. [' + err.message + ']');
+    // TypeError dari fetch = kegagalan jaringan sungguhan (offline/DNS/CORS).
+    // Error lain berasal dari bacaJawabanApi() di atas, yang pesannya sudah
+    // spesifik — jangan ditimpa pesan umum "periksa koneksi internet".
+    if(err instanceof TypeError) throw new Error('Gagal terhubung ke server. Periksa koneksi internet Anda, lalu coba lagi.');
+    throw err;
   } finally {
     clearTimeout(timeout);
   }
@@ -880,14 +1146,15 @@ function adminLogout(){
 function setAdminSubview(view){
   adminSubview = view;
   toggleSidebar(false);
-  ['dashboard','review','repositori','statistik','kategori'].forEach(v=>document.getElementById('admin-'+v).classList.toggle('hidden-view', v!==view));
-  ['dashboard','repositori','statistik','kategori'].forEach(v=>{ const el=document.getElementById('nav-'+v); if(el) el.classList.toggle('active', v===view); });
-  const titles = { dashboard:'Dasbor', review:'Review Proposal', repositori:'Repositori Riset', statistik:'Statistik', kategori:'Kategori Topik' };
+  ['dashboard','review','repositori','statistik','kategori','apc'].forEach(v=>document.getElementById('admin-'+v).classList.toggle('hidden-view', v!==view));
+  ['dashboard','repositori','statistik','kategori','apc'].forEach(v=>{ const el=document.getElementById('nav-'+v); if(el) el.classList.toggle('active', v===view); });
+  const titles = { dashboard:'Dasbor', review:'Review Proposal', repositori:'Repositori Riset', statistik:'Statistik', kategori:'Kategori Topik', apc:'Bantuan APC' };
   document.getElementById('mobile-admin-title').textContent = titles[view] || 'Dasbor';
   if(view==='dashboard') renderDashboard();
   if(view==='repositori') renderRepositori();
   if(view==='statistik') renderStatistik();
   if(view==='kategori') renderKategoriAdmin();
+  if(view==='apc') fetchApcList();
 }
 
 function skeletonRows(n){
@@ -1825,6 +2092,434 @@ document.getElementById('pernyataan-form').addEventListener('submit', async func
   }
 });
 
+// ============================================================
+// ---------- MODUL BANTUAN BIAYA PUBLIKASI (APC) ----------
+// ============================================================
+let apcList = [];
+let apcCeklis = [];
+let currentApcId = null;
+let currentApcTrackId = null;
+
+// Berkas yang wajib diunggah — didefinisikan sekali di sini lalu dropzone-nya
+// dibangun otomatis, supaya penambahan/pengubahan berkas cukup di satu tempat.
+const APC_BERKAS = [
+  { id: 'apc-loa',        label: 'Letter of Acceptance (LoA) dari jurnal' },
+  { id: 'apc-invoice',    label: 'Invoice/tagihan APC dari jurnal' },
+  { id: 'apc-bukti',      label: 'Bukti pembayaran APC' },
+  { id: 'apc-artikel',    label: 'Naskah artikel (versi diterima/terbit)' },
+  { id: 'apc-pernyataan', label: 'Surat pernyataan pemohon (bermeterai)' },
+];
+
+function buildApcDropzones(){
+  const wrap = document.getElementById('apc-dropzones');
+  if(!wrap) return;
+  wrap.innerHTML = APC_BERKAS.map(b => `
+    <div>
+      <label class="block text-sm font-medium mb-1.5">${b.label} *</label>
+      <div class="dropzone" data-for="${b.id}">
+        <input type="file" id="${b.id}" accept="application/pdf" class="hidden">
+        <svg class="icon mx-auto mb-1" style="width:1.4rem;height:1.4rem;color:var(--sage)" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <p class="text-sm" style="color:var(--ink-muted)">Tarik berkas ke sini atau <span class="dropzone-browse">pilih file</span></p>
+        <p class="dropzone-filename"></p>
+      </div>
+    </div>`).join('');
+  // Dropzone dibangun setelah initDropzone awal berjalan, jadi harus
+  // diinisialisasi manual di sini.
+  wrap.querySelectorAll('.dropzone').forEach(initDropzone);
+}
+
+function setApcTab(tab){
+  document.getElementById('apc-panel-ajukan').classList.toggle('hidden-view', tab!=='ajukan');
+  document.getElementById('apc-panel-lacak').classList.toggle('hidden-view', tab!=='lacak');
+  document.getElementById('apc-tab-ajukan').classList.toggle('active', tab==='ajukan');
+  document.getElementById('apc-tab-lacak').classList.toggle('active', tab==='lacak');
+}
+
+function onApcStatusPemohonChange(){
+  const v = document.getElementById('apc-status-pemohon').value;
+  document.getElementById('apc-divisi-wrap').classList.toggle('hidden-view', v==='Umum');
+}
+
+function onApcKategoriChange(){
+  const kategori = document.getElementById('apc-kategori').value;
+  const sel = document.getElementById('apc-peringkat');
+  const opsi = kategori==='SINTA'  ? ['SINTA 1','SINTA 2','SINTA 3','SINTA 4']
+             : kategori==='Scopus' ? ['Q1','Q2','Q3','Q4'] : [];
+  sel.innerHTML = '<option value="">Peringkat *</option>' + opsi.map(o=>`<option>${o}</option>`).join('');
+}
+
+// ---------- PEMOHON: KIRIM PERMOHONAN ----------
+document.getElementById('apc-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const btn = document.getElementById('apc-submit-btn');
+  const errBox = document.getElementById('apc-error');
+  const okBox = document.getElementById('apc-success');
+  errBox.classList.add('hidden-view');
+  okBox.classList.add('hidden-view');
+
+  function gagal(pesan){
+    errBox.textContent = pesan;
+    errBox.classList.remove('hidden-view');
+    btn.disabled = false; btn.textContent = 'Kirim Permohonan';
+  }
+
+  btn.disabled = true; btn.textContent = 'Mengirim…';
+  try{
+    // Semua berkas wajib — dicek dulu sebelum membaca agar pesannya jelas.
+    for(const b of APC_BERKAS){
+      if(!document.getElementById(b.id).files[0]) return gagal(b.label + ' wajib diunggah.');
+    }
+
+    const b64 = {};
+    for(const b of APC_BERKAS){
+      try{
+        b64[b.id] = await readFileValidated(document.getElementById(b.id).files[0], b.label);
+      } catch(sizeErr){ return gagal(sizeErr.message); }
+    }
+
+    const res = await apiPost({
+      action:'submitAPC',
+      namaPemohon: document.getElementById('apc-nama').value.trim(),
+      institusi: document.getElementById('apc-institusi').value.trim(),
+      email: document.getElementById('apc-email').value.trim(),
+      whatsapp: document.getElementById('apc-wa').value.trim(),
+      statusPemohon: document.getElementById('apc-status-pemohon').value,
+      divisiAmil: document.getElementById('apc-divisi').value.trim(),
+      nomorPengajuanRiset: document.getElementById('apc-nomor-riset').value.trim().toUpperCase(),
+      judulArtikel: document.getElementById('apc-judul').value.trim(),
+      namaJurnal: document.getElementById('apc-jurnal').value.trim(),
+      kategoriJurnal: document.getElementById('apc-kategori').value,
+      peringkatJurnal: document.getElementById('apc-peringkat').value,
+      tautanBuktiIndeksasi: document.getElementById('apc-tautan-bukti').value.trim(),
+      tanggalBayarAPC: document.getElementById('apc-tanggal-bayar').value,
+      nominalAPC: document.getElementById('apc-nominal').value.trim(),
+      loaBase64: b64['apc-loa'],              loaName: document.getElementById('apc-loa').files[0].name,
+      invoiceBase64: b64['apc-invoice'],      invoiceName: document.getElementById('apc-invoice').files[0].name,
+      buktiBayarBase64: b64['apc-bukti'],     buktiBayarName: document.getElementById('apc-bukti').files[0].name,
+      artikelBase64: b64['apc-artikel'],      artikelName: document.getElementById('apc-artikel').files[0].name,
+      pernyataanBase64: b64['apc-pernyataan'],pernyataanName: document.getElementById('apc-pernyataan').files[0].name
+    });
+
+    if(res.success){
+      document.getElementById('apc-success-id').textContent = res.displayId;
+      okBox.classList.remove('hidden-view');
+      this.reset();
+      onApcKategoriChange();
+      onApcStatusPemohonChange();
+      document.getElementById('apc-track-input').value = res.displayId;
+      window.scrollTo({ top: okBox.getBoundingClientRect().top + window.scrollY - 120, behavior:'smooth' });
+    } else {
+      return gagal(res.error || 'Gagal mengirim permohonan.');
+    }
+  } catch(err){
+    return gagal(err.message || String(err));
+  } finally {
+    btn.disabled = false; btn.textContent = 'Kirim Permohonan';
+  }
+});
+
+// ---------- PEMOHON: LACAK ----------
+async function trackApc(){
+  const id = document.getElementById('apc-track-input').value.trim().toUpperCase();
+  const box = document.getElementById('apc-track-result');
+  const btn = document.getElementById('apc-track-btn');
+  const terbitWrap = document.getElementById('apc-terbit-wrap');
+  terbitWrap.classList.add('hidden-view');
+  if(!id) return;
+
+  btn.disabled = true; btn.textContent = '…';
+  try{
+    const res = await apiGet({ action:'trackAPC', id });
+    if(!res.success){
+      box.innerHTML = `<p class="text-sm p-4 rounded-lg" style="background:var(--red-tint); color:var(--red)">${escapeHtml(res.error || 'Nomor permohonan tidak ditemukan.')}</p>`;
+      return;
+    }
+    const d = res.data;
+    currentApcTrackId = id;
+    box.innerHTML = `
+      <div class="p-4 rounded-lg" style="background:var(--sage-light)">
+        <p class="font-mono text-sm font-semibold" style="color:var(--sage)">${escapeHtml(d.displayId)}</p>
+        <p class="font-medium text-sm mt-1">${escapeHtml(d.judulArtikel)}</p>
+        <p class="text-xs mt-0.5" style="color:var(--ink-muted)">${escapeHtml(d.namaPemohon)} · ${escapeHtml(d.namaJurnal)}</p>
+        <p class="mt-3"><span class="badge ${badgeApc(d.status)}">${escapeHtml(d.status)}</span></p>
+      </div>
+      ${d.catatanAdmin ? `<div class="mt-3 p-3 rounded-lg text-sm" style="background:var(--gold-tint); color:var(--forest-deep)"><b>Catatan dari Divisi SRD:</b><br>${escapeHtml(d.catatanAdmin).replace(/\n/g,'<br>')}</div>` : ''}
+      ${d.sudahLaporTerbit ? `<div class="mt-3 p-3 rounded-lg text-sm" style="background:var(--sage-light); color:var(--forest)">✅ Tautan artikel terbit sudah Anda sampaikan. Terima kasih.</div>` : ''}
+    `;
+    // Formulir lapor terbit hanya dibuka setelah dana dicairkan dan belum dilaporkan.
+    if(d.bolehLaporTerbit && !d.sudahLaporTerbit){
+      terbitWrap.classList.remove('hidden-view');
+      document.getElementById('apc-terbit-success').classList.add('hidden-view');
+    }
+  } catch(err){
+    box.innerHTML = `<p class="text-sm p-4 rounded-lg" style="background:var(--red-tint); color:var(--red)">${escapeHtml(err.message)}</p>`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Lacak';
+  }
+}
+
+document.getElementById('apc-terbit-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const btn = document.getElementById('apc-terbit-btn');
+  const err = document.getElementById('apc-terbit-error');
+  err.classList.add('hidden-view');
+  btn.disabled = true; btn.textContent = 'Mengirim…';
+  try{
+    const res = await apiPost({
+      action:'laporTerbitAPC',
+      displayId: currentApcTrackId,
+      doi: document.getElementById('apc-doi').value.trim()
+    });
+    if(res.success){
+      document.getElementById('apc-terbit-success').classList.remove('hidden-view');
+      this.reset();
+      this.classList.add('hidden-view');
+    } else {
+      err.textContent = res.error || 'Gagal mengirim tautan artikel.';
+      err.classList.remove('hidden-view');
+    }
+  } catch(e2){
+    err.textContent = e2.message || String(e2);
+    err.classList.remove('hidden-view');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Kirim Tautan Artikel';
+  }
+});
+
+function badgeApc(status){
+  return {
+    'Diajukan':'badge-pending', 'Verifikasi':'badge-review',
+    'Perlu Kelengkapan':'badge-revise', 'Disetujui':'badge-approved',
+    'Dicairkan':'badge-approved', 'Terbit':'badge-approved', 'Ditolak':'badge-rejected'
+  }[status] || 'badge-pending';
+}
+
+// ---------- ADMIN: DAFTAR PERMOHONAN ----------
+async function fetchApcList(){
+  const tb = document.getElementById('apc-tbody');
+  tb.innerHTML = `<tr><td colspan="6" class="px-5 py-8 text-center text-sm" style="color:var(--ink-muted)">Memuat…</td></tr>`;
+  try{
+    const res = await apiPost({ action:'listAPC', adminPassword });
+    if(!res.success){
+      tb.innerHTML = `<tr><td colspan="6" class="px-5 py-8 text-center text-sm" style="color:var(--red)">${escapeHtml(res.error || 'Gagal memuat data.')}</td></tr>`;
+      return;
+    }
+    apcList = res.data || [];
+    apcCeklis = res.ceklis || [];
+    renderApcKuota(res.kuota);
+    renderApcTable();
+  } catch(err){
+    tb.innerHTML = `<tr><td colspan="6" class="px-5 py-8 text-center text-sm" style="color:var(--red)">${escapeHtml(err.message)}</td></tr>`;
+  }
+}
+
+function renderApcKuota(k){
+  if(!k) return;
+  const menunggu = apcList.filter(r=>['Diajukan','Verifikasi','Perlu Kelengkapan'].includes(r.Status)).length;
+  const kartu = [
+    { label:'Kuota '+k.tahun, nilai:k.total },
+    { label:'Terpakai', nilai:k.terpakai },
+    { label:'Sisa Kuota', nilai:k.sisa, warna: k.sisa===0 ? 'var(--red)' : 'var(--sage)' },
+    { label:'Menunggu Diproses', nilai:menunggu, warna:'var(--gold-deep)' },
+  ];
+  document.getElementById('apc-kuota-box').innerHTML = kartu.map(c=>`
+    <div class="card p-5">
+      <p class="text-xs font-medium" style="color:var(--ink-muted)">${c.label}</p>
+      <p class="font-display text-2xl font-semibold mt-1" style="color:${c.warna || 'var(--forest)'}">${c.nilai}</p>
+    </div>`).join('');
+
+  // Kuota habis adalah keadaan yang harus terlihat jelas sebelum admin
+  // menyetujui permohonan berikutnya.
+  const alert = document.getElementById('apc-admin-alert');
+  alert.innerHTML = (k.sisa === 0 && k.total > 0)
+    ? `<div class="p-4 rounded-lg mb-5 text-sm" style="background:var(--red-tint); color:var(--red)"><b>Kuota tahun ${k.tahun} sudah terpenuhi.</b> Sesuai Pasal 9 ayat (5) Pedoman, permohonan berikutnya tidak diproses sampai kuota tahun berikutnya dibuka.</div>`
+    : '';
+}
+
+function renderApcTable(){
+  const tb = document.getElementById('apc-tbody');
+  document.getElementById('apc-count').textContent = apcList.length + ' permohonan';
+  if(!apcList.length){
+    tb.innerHTML = `<tr><td colspan="6" class="px-5 py-10 text-center text-sm" style="color:var(--ink-muted)">Belum ada permohonan bantuan APC.</td></tr>`;
+    return;
+  }
+  const urut = apcList.slice().sort((a,b)=> (new Date(b.Timestamp)||0) - (new Date(a.Timestamp)||0));
+  tb.innerHTML = urut.map(r=>`
+    <tr class="hover:bg-[var(--sage-light)] transition">
+      <td class="px-5 py-4 font-mono text-xs font-medium" style="color:var(--sage)">${escapeHtml(r.DisplayID)}</td>
+      <td class="px-5 py-4">
+        <div class="font-medium text-sm">${escapeHtml(r.NamaPemohon)}</div>
+        <div class="text-xs mt-0.5" style="color:var(--ink-muted)">${escapeHtml(r.Institusi)}</div>
+        ${r.StatusPemohon && r.StatusPemohon!=='Umum' ? `<div class="text-xs mt-1" style="color:var(--gold-deep)">⚠ ${escapeHtml(r.StatusPemohon)}</div>` : ''}
+      </td>
+      <td class="px-5 py-4 text-sm max-w-xs">
+        <div class="truncate" title="${escapeHtml(r.JudulArtikel)}">${escapeHtml(r.JudulArtikel)}</div>
+        <div class="text-xs mt-0.5" style="color:var(--ink-muted)">${escapeHtml(r.NamaJurnal)} · ${escapeHtml(r.KategoriJurnal)} ${escapeHtml(r.PeringkatJurnal)}</div>
+      </td>
+      <td class="px-5 py-4 text-sm whitespace-nowrap">Rp ${escapeHtml(r.NominalAPC)}</td>
+      <td class="px-5 py-4"><span class="badge ${badgeApc(r.Status)}">${escapeHtml(r.Status)}</span></td>
+      <td class="px-5 py-4 text-right">
+        <button onclick="bukaApcDetail('${escapeHtml(r.DisplayID)}')" class="inline-flex items-center gap-1 px-3 py-1.5 border rounded-lg text-xs font-medium hover:bg-[var(--sage-light)]" style="border-color:var(--line); color:var(--forest)">Tinjau</button>
+      </td>
+    </tr>`).join('');
+}
+
+// ---------- ADMIN: DETAIL & VERIFIKASI ----------
+function bukaApcDetail(id){
+  const r = apcList.find(x=>x.DisplayID===id);
+  if(!r) return;
+  currentApcId = id;
+
+  function baris(label, nilai){
+    return `<div class="flex gap-2"><span class="shrink-0" style="color:var(--ink-muted); min-width:140px">${label}</span><span>${escapeHtml(nilai || '—')}</span></div>`;
+  }
+  document.getElementById('apc-detail-data').innerHTML =
+    baris('Nomor', r.DisplayID) +
+    baris('Pemohon', r.NamaPemohon) +
+    baris('Institusi', r.Institusi) +
+    baris('Email', r.Email) +
+    baris('WhatsApp', r.WhatsApp) +
+    baris('Status pemohon', r.StatusPemohon) +
+    (r.DivisiAmil ? baris('Divisi/hubungan', r.DivisiAmil) : '') +
+    (r.NomorPengajuanRiset ? baris('No. pengajuan riset', r.NomorPengajuanRiset) : '') +
+    baris('Judul artikel', r.JudulArtikel) +
+    baris('Jurnal', r.NamaJurnal) +
+    baris('Kategori', (r.KategoriJurnal||'') + ' ' + (r.PeringkatJurnal||'')) +
+    baris('Tgl bayar APC', fmtDate(r.TanggalBayarAPC)) +
+    baris('Nominal APC', 'Rp ' + (r.NominalAPC||'')) +
+    (r.Verifikator ? baris('Verifikator', r.Verifikator) : '') +
+    (r.NominalDisetujui ? baris('Disetujui', 'Rp ' + r.NominalDisetujui) : '') +
+    (r.NomorBuktiTransfer ? baris('Bukti transfer', r.NomorBuktiTransfer) : '') +
+    (r.DOIArtikelTerbit ? baris('DOI terbit', r.DOIArtikelTerbit) : '');
+
+  const berkas = [
+    { l:'Letter of Acceptance', u:r.LinkLoA },
+    { l:'Invoice APC', u:r.LinkInvoice },
+    { l:'Bukti pembayaran', u:r.LinkBuktiBayar },
+    { l:'Naskah artikel', u:r.LinkArtikel },
+    { l:'Surat pernyataan', u:r.LinkPernyataan },
+    { l:'Bukti indeksasi jurnal ↗', u:r.TautanBuktiIndeksasi },
+  ].filter(f=>f.u);
+  document.getElementById('apc-detail-berkas').innerHTML = berkas.map(f=>`
+    <a href="${f.u}" target="_blank" class="flex items-center gap-2 hover:underline" style="color:var(--sage)">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 6v13a1 1 0 001 1h14a1 1 0 001-1V6" stroke-linecap="round"/></svg> ${f.l}
+    </a>`).join('') || `<p style="color:var(--ink-muted)">Tidak ada berkas.</p>`;
+
+  // Daftar periksa — hasil sebelumnya (bila sudah pernah diverifikasi) dipulihkan
+  // supaya verifikator tidak kehilangan pekerjaan yang sudah dilakukan.
+  const tersimpan = (r.HasilVerifikasi || '').split('|').map(s=>s.trim());
+  document.getElementById('apc-ceklis').innerHTML = apcCeklis.map((butir,i)=>`
+    <label class="flex items-start gap-2 cursor-pointer">
+      <input type="checkbox" class="apc-cek mt-0.5" data-butir="${escapeHtml(butir)}" ${tersimpan.indexOf(butir)!==-1 ? 'checked' : ''}>
+      <span>${escapeHtml(butir)}</span>
+    </label>`).join('');
+  document.getElementById('apc-ceklis-info').textContent =
+    'Butir yang dicentang akan tersimpan sebagai jejak audit bersama keputusan Anda.';
+
+  document.getElementById('apc-verifikator').value = r.Verifikator || '';
+  document.getElementById('apc-nominal-setuju').value = r.NominalDisetujui || r.NominalAPC || '';
+  document.getElementById('apc-catatan').value = '';
+  document.getElementById('apc-keputusan-alert').innerHTML = '';
+  document.getElementById('apc-cair-alert').innerHTML = '';
+  document.getElementById('apc-nomor-bukti').value = '';
+
+  // Panel yang ditampilkan menyesuaikan tahap permohonan.
+  const belumFinal = ['Diajukan','Verifikasi','Perlu Kelengkapan'].includes(r.Status);
+  document.getElementById('apc-keputusan-wrap').classList.toggle('hidden-view', !belumFinal);
+  document.getElementById('apc-cair-wrap').classList.toggle('hidden-view', r.Status!=='Disetujui');
+  const selesai = document.getElementById('apc-selesai-wrap');
+  if(r.Status==='Dicairkan' || r.Status==='Terbit' || r.Status==='Ditolak'){
+    selesai.classList.remove('hidden-view');
+    selesai.innerHTML = r.Status==='Ditolak'
+      ? `Permohonan ini <b>ditolak</b>.${r.CatatanAdmin ? '<br>Alasan: ' + escapeHtml(r.CatatanAdmin) : ''}`
+      : (r.Status==='Terbit'
+        ? `Permohonan <b>selesai</b> — dana dicairkan dan artikel sudah terbit.<br>DOI/tautan: ${escapeHtml(r.DOIArtikelTerbit||'—')}`
+        : `Dana sudah <b>dicairkan</b> (bukti: ${escapeHtml(r.NomorBuktiTransfer||'—')}). Menunggu pemohon melaporkan artikel terbit.`);
+  } else {
+    selesai.classList.add('hidden-view');
+  }
+
+  const panel = document.getElementById('apc-detail-panel');
+  panel.classList.remove('hidden-view');
+  panel.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function tutupApcDetail(){
+  document.getElementById('apc-detail-panel').classList.add('hidden-view');
+  currentApcId = null;
+}
+
+function ambilHasilCeklis(){
+  return Array.from(document.querySelectorAll('.apc-cek:checked'))
+    .map(c=>c.dataset.butir).join(' | ');
+}
+
+async function putuskanApc(status){
+  if(!currentApcId) return;
+  const alert = document.getElementById('apc-keputusan-alert');
+  const catatan = document.getElementById('apc-catatan').value.trim();
+  const verifikator = document.getElementById('apc-verifikator').value.trim();
+  const nominal = document.getElementById('apc-nominal-setuju').value.trim();
+
+  function tampilkan(tipe, pesan){
+    alert.innerHTML = `<div class="p-3 rounded-lg text-sm" style="background:${tipe==='error'?'var(--red-tint)':'var(--sage-light)'}; color:${tipe==='error'?'var(--red)':'var(--sage)'}">${pesan}</div>`;
+  }
+
+  if(['Perlu Kelengkapan','Ditolak'].includes(status) && !catatan){
+    return tampilkan('error','Catatan wajib diisi untuk keputusan ini — pemohon perlu tahu apa yang harus diperbaiki.');
+  }
+  if(status==='Disetujui'){
+    if(!verifikator) return tampilkan('error','Nama verifikator wajib diisi sebagai bagian dari jejak audit.');
+    if(!nominal) return tampilkan('error','Nominal yang disetujui wajib diisi.');
+    const belumLengkap = apcCeklis.length - document.querySelectorAll('.apc-cek:checked').length;
+    if(belumLengkap > 0 && !confirm('Masih ada ' + belumLengkap + ' butir daftar periksa yang belum dicentang. Tetap setujui permohonan ini?')) return;
+  }
+  if(status==='Ditolak' && !confirm('Tolak permohonan ini? Email penolakan akan langsung terkirim ke pemohon.')) return;
+
+  tampilkan('info','⏳ Memproses…');
+  try{
+    const res = await apiPost({
+      action:'decideAPC', displayId: currentApcId, newStatus: status,
+      catatan, verifikator, nominalDisetujui: nominal,
+      hasilVerifikasi: ambilHasilCeklis(), adminPassword
+    });
+    if(res.success){
+      tampilkan('info','✅ Keputusan tersimpan.');
+      await fetchApcList();
+      bukaApcDetail(currentApcId);
+    } else {
+      tampilkan('error', res.error || 'Gagal menyimpan keputusan.');
+    }
+  } catch(err){
+    tampilkan('error', err.message || String(err));
+  }
+}
+
+async function catatPencairanApc(){
+  if(!currentApcId) return;
+  const alert = document.getElementById('apc-cair-alert');
+  const nomor = document.getElementById('apc-nomor-bukti').value.trim();
+  if(!nomor){
+    alert.innerHTML = `<div class="p-3 rounded-lg text-sm" style="background:var(--red-tint); color:var(--red)">Nomor bukti transaksi wajib diisi.</div>`;
+    return;
+  }
+  alert.innerHTML = `<div class="p-3 rounded-lg text-sm" style="background:var(--sage-light); color:var(--sage)">⏳ Menyimpan…</div>`;
+  try{
+    const res = await apiPost({
+      action:'cairkanAPC', displayId: currentApcId, nomorBukti: nomor,
+      verifikator: document.getElementById('apc-verifikator').value.trim(), adminPassword
+    });
+    if(res.success){
+      await fetchApcList();
+      bukaApcDetail(currentApcId);
+    } else {
+      alert.innerHTML = `<div class="p-3 rounded-lg text-sm" style="background:var(--red-tint); color:var(--red)">${escapeHtml(res.error || 'Gagal mencatat pencairan.')}</div>`;
+    }
+  } catch(err){
+    alert.innerHTML = `<div class="p-3 rounded-lg text-sm" style="background:var(--red-tint); color:var(--red)">${escapeHtml(err.message)}</div>`;
+  }
+}
+
 // ---------- SESI ADMIN (bertahan lewat localStorage selama 8 jam — TIDAK ----------
 // ---------- hilang saat refresh atau saat dibuka di tab baru, hanya lewat ----------
 // ---------- logout eksplisit atau setelah 8 jam) ----------
@@ -1864,6 +2559,8 @@ document.getElementById('output-id-input').addEventListener('keydown', e => { if
 document.getElementById('revision-id-input').addEventListener('keydown', e => { if(e.key === 'Enter') checkRevisionEligibility(); });
 document.getElementById('pernyataan-id-input').addEventListener('keydown', e => { if(e.key === 'Enter') checkPernyataanEligibility(); });
 document.getElementById('admin-password-input').addEventListener('keydown', e => { if(e.key === 'Enter') attemptAdminLogin(); });
+document.getElementById('apc-track-input').addEventListener('keydown', e => { if(e.key === 'Enter') trackApc(); });
+buildApcDropzones();
 loadCategories();
 adminSessionRestorePromise = tryRestoreAdminSession();
 </script>
